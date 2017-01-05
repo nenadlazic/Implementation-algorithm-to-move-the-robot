@@ -254,8 +254,8 @@
      <rect>
       <x>240</x>
       <y>0</y>
-      <width>791</width>
-      <height>611</height>
+      <width>1031</width>
+      <height>671</height>
      </rect>
     </property>
     <property name="font">
@@ -273,7 +273,7 @@
       <x>9</x>
       <y>209</y>
       <width>221</width>
-      <height>401</height>
+      <height>411</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -285,10 +285,23 @@
        <x>0</x>
        <y>0</y>
        <width>219</width>
-       <height>399</height>
+       <height>409</height>
       </rect>
      </property>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="Apply">
+    <property name="geometry">
+     <rect>
+      <x>114</x>
+      <y>630</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

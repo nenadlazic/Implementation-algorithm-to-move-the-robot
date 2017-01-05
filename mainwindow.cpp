@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     vbox = NULL;
     QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
     QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
+    QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
+
 }
 
 MainWindow::~MainWindow()
@@ -34,7 +36,7 @@ void MainWindow::initializationFinish(){
     qDebug()<<"numberobstacles";
     qDebug()<<numberObstacles;
 
-    QStringList listS=(QStringList()<<"odaberi"<<"krug"<<"elipsa"<<"poligon");
+    QStringList listS=(QStringList()<<"odaberi"<<"krug"<<"elipsa"<<"trougao"<<"cetvorougao"<<"petougao"<<"sestougao"<<"sedmougao");
     UIMW->scrollArea->setWidgetResizable(true);
 
     //za jednu prepreku cuvacemo podatke u vise lista
@@ -199,11 +201,274 @@ void MainWindow::showInputsCoordinate(const QString& text){
         pointsBoxList.at(index)->addWidget(lbl4,3,0);
         pointsBoxList.at(index)->addWidget(edLine6,3,1);
 
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+
         break;
     }
     case 3://poligon
     {
         qDebug()<<"opcija3";
+
+        QLabel *lbl1 = new QLabel("A:");
+        QLabel *lbl2 = new QLabel("B:");
+        QLabel *lbl3 = new QLabel("C:");
+
+        QLineEdit *edLine1 = new QLineEdit();
+        QLineEdit *edLine2 = new QLineEdit();
+        QLineEdit *edLine3 = new QLineEdit();
+        QLineEdit *edLine4 = new QLineEdit();
+        QLineEdit *edLine5 = new QLineEdit();
+        QLineEdit *edLine6 = new QLineEdit();
+
+        pointsBoxList.at(index)->addWidget(lbl1,0,0);
+        pointsBoxList.at(index)->addWidget(edLine1,0,1);
+        pointsBoxList.at(index)->addWidget(edLine2,0,2);
+
+        pointsBoxList.at(index)->addWidget(lbl2,1,0);
+        pointsBoxList.at(index)->addWidget(edLine3,1,1);
+        pointsBoxList.at(index)->addWidget(edLine4,1,2);
+
+        pointsBoxList.at(index)->addWidget(lbl3,2,0);
+        pointsBoxList.at(index)->addWidget(edLine5,2,1);
+        pointsBoxList.at(index)->addWidget(edLine6,2,2);
+
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+
+        break;
+    }
+    case 4:
+    {
+        QLabel *lbl1 = new QLabel("A:");
+        QLabel *lbl2 = new QLabel("B:");
+        QLabel *lbl3 = new QLabel("C:");
+        QLabel *lbl4 = new QLabel("D:");
+
+        QLineEdit *edLine1 = new QLineEdit();
+        QLineEdit *edLine2 = new QLineEdit();
+        QLineEdit *edLine3 = new QLineEdit();
+        QLineEdit *edLine4 = new QLineEdit();
+        QLineEdit *edLine5 = new QLineEdit();
+        QLineEdit *edLine6 = new QLineEdit();
+        QLineEdit *edLine7 = new QLineEdit();
+        QLineEdit *edLine8 = new QLineEdit();
+
+        pointsBoxList.at(index)->addWidget(lbl1,0,0);
+        pointsBoxList.at(index)->addWidget(edLine1,0,1);
+        pointsBoxList.at(index)->addWidget(edLine2,0,2);
+
+        pointsBoxList.at(index)->addWidget(lbl2,1,0);
+        pointsBoxList.at(index)->addWidget(edLine3,1,1);
+        pointsBoxList.at(index)->addWidget(edLine4,1,2);
+
+        pointsBoxList.at(index)->addWidget(lbl3,2,0);
+        pointsBoxList.at(index)->addWidget(edLine5,2,1);
+        pointsBoxList.at(index)->addWidget(edLine6,2,2);
+
+        pointsBoxList.at(index)->addWidget(lbl4,3,0);
+        pointsBoxList.at(index)->addWidget(edLine7,3,1);
+        pointsBoxList.at(index)->addWidget(edLine8,3,2);
+
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+        listPoints.at(index)->push_back(edLine7);
+        listPoints.at(index)->push_back(edLine8);
+
+        break;
+    }
+    case 5:
+    {
+        QLabel *lbl1 = new QLabel("A:");
+        QLabel *lbl2 = new QLabel("B:");
+        QLabel *lbl3 = new QLabel("C:");
+        QLabel *lbl4 = new QLabel("D:");
+        QLabel *lbl5 = new QLabel("E:");
+
+        QLineEdit *edLine1 = new QLineEdit();
+        QLineEdit *edLine2 = new QLineEdit();
+        QLineEdit *edLine3 = new QLineEdit();
+        QLineEdit *edLine4 = new QLineEdit();
+        QLineEdit *edLine5 = new QLineEdit();
+        QLineEdit *edLine6 = new QLineEdit();
+        QLineEdit *edLine7 = new QLineEdit();
+        QLineEdit *edLine8 = new QLineEdit();
+        QLineEdit *edLine9 = new QLineEdit();
+        QLineEdit *edLine10 = new QLineEdit();
+
+        pointsBoxList.at(index)->addWidget(lbl1,0,0);
+        pointsBoxList.at(index)->addWidget(edLine1,0,1);
+        pointsBoxList.at(index)->addWidget(edLine2,0,2);
+
+        pointsBoxList.at(index)->addWidget(lbl2,1,0);
+        pointsBoxList.at(index)->addWidget(edLine3,1,1);
+        pointsBoxList.at(index)->addWidget(edLine4,1,2);
+
+        pointsBoxList.at(index)->addWidget(lbl3,2,0);
+        pointsBoxList.at(index)->addWidget(edLine5,2,1);
+        pointsBoxList.at(index)->addWidget(edLine6,2,2);
+
+        pointsBoxList.at(index)->addWidget(lbl4,3,0);
+        pointsBoxList.at(index)->addWidget(edLine7,3,1);
+        pointsBoxList.at(index)->addWidget(edLine8,3,2);
+
+        pointsBoxList.at(index)->addWidget(lbl5,4,0);
+        pointsBoxList.at(index)->addWidget(edLine9,4,1);
+        pointsBoxList.at(index)->addWidget(edLine10,4,2);
+
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+        listPoints.at(index)->push_back(edLine7);
+        listPoints.at(index)->push_back(edLine8);
+        listPoints.at(index)->push_back(edLine9);
+        listPoints.at(index)->push_back(edLine10);
+
+        break;
+    }
+    case 6:
+    {
+        QLabel *lbl1 = new QLabel("A:");
+        QLabel *lbl2 = new QLabel("B:");
+        QLabel *lbl3 = new QLabel("C:");
+        QLabel *lbl4 = new QLabel("D:");
+        QLabel *lbl5 = new QLabel("E:");
+        QLabel *lbl6 = new QLabel("F:");
+
+        QLineEdit *edLine1 = new QLineEdit();
+        QLineEdit *edLine2 = new QLineEdit();
+        QLineEdit *edLine3 = new QLineEdit();
+        QLineEdit *edLine4 = new QLineEdit();
+        QLineEdit *edLine5 = new QLineEdit();
+        QLineEdit *edLine6 = new QLineEdit();
+        QLineEdit *edLine7 = new QLineEdit();
+        QLineEdit *edLine8 = new QLineEdit();
+        QLineEdit *edLine9 = new QLineEdit();
+        QLineEdit *edLine10 = new QLineEdit();
+        QLineEdit *edLine11 = new QLineEdit();
+        QLineEdit *edLine12 = new QLineEdit();
+
+        pointsBoxList.at(index)->addWidget(lbl1,0,0);
+        pointsBoxList.at(index)->addWidget(edLine1,0,1);
+        pointsBoxList.at(index)->addWidget(edLine2,0,2);
+
+        pointsBoxList.at(index)->addWidget(lbl2,1,0);
+        pointsBoxList.at(index)->addWidget(edLine3,1,1);
+        pointsBoxList.at(index)->addWidget(edLine4,1,2);
+
+        pointsBoxList.at(index)->addWidget(lbl3,2,0);
+        pointsBoxList.at(index)->addWidget(edLine5,2,1);
+        pointsBoxList.at(index)->addWidget(edLine6,2,2);
+
+        pointsBoxList.at(index)->addWidget(lbl4,3,0);
+        pointsBoxList.at(index)->addWidget(edLine7,3,1);
+        pointsBoxList.at(index)->addWidget(edLine8,3,2);
+
+        pointsBoxList.at(index)->addWidget(lbl5,4,0);
+        pointsBoxList.at(index)->addWidget(edLine9,4,1);
+        pointsBoxList.at(index)->addWidget(edLine10,4,2);
+
+        pointsBoxList.at(index)->addWidget(lbl6,5,0);
+        pointsBoxList.at(index)->addWidget(edLine11,5,1);
+        pointsBoxList.at(index)->addWidget(edLine12,5,2);
+
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+        listPoints.at(index)->push_back(edLine7);
+        listPoints.at(index)->push_back(edLine8);
+        listPoints.at(index)->push_back(edLine9);
+        listPoints.at(index)->push_back(edLine10);
+        listPoints.at(index)->push_back(edLine11);
+        listPoints.at(index)->push_back(edLine12);
+
+        break;
+    }
+    case 7:
+    {
+        QLabel *lbl1 = new QLabel("A:");
+        QLabel *lbl2 = new QLabel("B:");
+        QLabel *lbl3 = new QLabel("C:");
+        QLabel *lbl4 = new QLabel("D:");
+        QLabel *lbl5 = new QLabel("E:");
+        QLabel *lbl6 = new QLabel("F:");
+        QLabel *lbl7 = new QLabel("G:");
+
+        QLineEdit *edLine1 = new QLineEdit();
+        QLineEdit *edLine2 = new QLineEdit();
+        QLineEdit *edLine3 = new QLineEdit();
+        QLineEdit *edLine4 = new QLineEdit();
+        QLineEdit *edLine5 = new QLineEdit();
+        QLineEdit *edLine6 = new QLineEdit();
+        QLineEdit *edLine7 = new QLineEdit();
+        QLineEdit *edLine8 = new QLineEdit();
+        QLineEdit *edLine9 = new QLineEdit();
+        QLineEdit *edLine10 = new QLineEdit();
+        QLineEdit *edLine11 = new QLineEdit();
+        QLineEdit *edLine12 = new QLineEdit();
+        QLineEdit *edLine13 = new QLineEdit();
+        QLineEdit *edLine14 = new QLineEdit();
+
+        pointsBoxList.at(index)->addWidget(lbl1,0,0);
+        pointsBoxList.at(index)->addWidget(edLine1,0,1);
+        pointsBoxList.at(index)->addWidget(edLine2,0,2);
+
+        pointsBoxList.at(index)->addWidget(lbl2,1,0);
+        pointsBoxList.at(index)->addWidget(edLine3,1,1);
+        pointsBoxList.at(index)->addWidget(edLine4,1,2);
+
+        pointsBoxList.at(index)->addWidget(lbl3,2,0);
+        pointsBoxList.at(index)->addWidget(edLine5,2,1);
+        pointsBoxList.at(index)->addWidget(edLine6,2,2);
+
+        pointsBoxList.at(index)->addWidget(lbl4,3,0);
+        pointsBoxList.at(index)->addWidget(edLine7,3,1);
+        pointsBoxList.at(index)->addWidget(edLine8,3,2);
+
+        pointsBoxList.at(index)->addWidget(lbl5,4,0);
+        pointsBoxList.at(index)->addWidget(edLine9,4,1);
+        pointsBoxList.at(index)->addWidget(edLine10,4,2);
+
+        pointsBoxList.at(index)->addWidget(lbl6,5,0);
+        pointsBoxList.at(index)->addWidget(edLine11,5,1);
+        pointsBoxList.at(index)->addWidget(edLine12,5,2);
+
+        pointsBoxList.at(index)->addWidget(lbl7,6,0);
+        pointsBoxList.at(index)->addWidget(edLine13,6,1);
+        pointsBoxList.at(index)->addWidget(edLine14,6,2);
+
+        listPoints.at(index)->push_back(edLine1);
+        listPoints.at(index)->push_back(edLine2);
+        listPoints.at(index)->push_back(edLine3);
+        listPoints.at(index)->push_back(edLine4);
+        listPoints.at(index)->push_back(edLine5);
+        listPoints.at(index)->push_back(edLine6);
+        listPoints.at(index)->push_back(edLine7);
+        listPoints.at(index)->push_back(edLine8);
+        listPoints.at(index)->push_back(edLine9);
+        listPoints.at(index)->push_back(edLine10);
+        listPoints.at(index)->push_back(edLine11);
+        listPoints.at(index)->push_back(edLine12);
+        listPoints.at(index)->push_back(edLine13);
+        listPoints.at(index)->push_back(edLine14);
 
         break;
     }
@@ -227,4 +492,53 @@ void MainWindow::showInputsCoordinate(const QString& text){
 void MainWindow::emitshowInputsCoordinateSignal(int orderNumObstacles, int option)
 {
     emit signalChangedOptions(orderNumObstacles, option);
+}
+
+void MainWindow::readEnteredData(){
+    qDebug()<<"called readEnteredData";
+//    QVector<QPointF> *points;
+
+//    QPointF p1;
+//    QPointF p2;
+//    QPointF p3;
+//    QPointF p4;
+
+//    p1.setX(3);
+//    p1.setY(15);
+
+//    p2.setX(10);
+//    p2.setY(15);
+
+//    p3.setX(10);
+//    p3.setY(20);
+
+//    p4.setX(3);
+//    p4.setY(20);
+
+//    points->push_back(p1);
+//    points->push_back(p2);
+//    points->push_back(p3);
+//    points->push_back(p4);
+
+
+//    QPolygonF *pol = new QPolygon(points);
+//    QGraphicsPolygonItem *polygon = new QGraphicsPolygonItem(
+//                )
+    QPolygonF Triangle;
+    Triangle.append(QPointF(-500.,0));
+    Triangle.append(QPointF(0.,-500));
+    Triangle.append(QPointF(500.,0));
+    Triangle.append(QPointF(-500.,0));
+
+    QPen pen;
+    QBrush brush;
+    pen.setColor(Qt::yellow);
+    brush.setColor(Qt::black);
+    brush.setStyle(Qt::SolidPattern);
+
+    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+    scene.update();
+
+
 }

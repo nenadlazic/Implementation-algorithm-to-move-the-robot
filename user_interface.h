@@ -50,6 +50,7 @@ public:
     QGraphicsView *graphicsView;
     QScrollArea *scrollArea;
     QWidget *scrollAreaWidgetContents_4;
+    QPushButton *Apply;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -121,17 +122,20 @@ public:
         label_7->setFont(font);
         graphicsView = new QGraphicsView(centralWidget);
         graphicsView->setObjectName(QStringLiteral("graphicsView"));
-        graphicsView->setGeometry(QRect(240, 0, 791, 611));
+        graphicsView->setGeometry(QRect(240, 0, 1031, 671));
         graphicsView->setFont(font);
         graphicsView->setAutoFillBackground(false);
         scrollArea = new QScrollArea(centralWidget);
         scrollArea->setObjectName(QStringLiteral("scrollArea"));
-        scrollArea->setGeometry(QRect(9, 209, 221, 401));
+        scrollArea->setGeometry(QRect(9, 209, 221, 411));
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents_4 = new QWidget();
         scrollAreaWidgetContents_4->setObjectName(QStringLiteral("scrollAreaWidgetContents_4"));
-        scrollAreaWidgetContents_4->setGeometry(QRect(0, 0, 219, 399));
+        scrollAreaWidgetContents_4->setGeometry(QRect(0, 0, 219, 409));
         scrollArea->setWidget(scrollAreaWidgetContents_4);
+        Apply = new QPushButton(centralWidget);
+        Apply->setObjectName(QStringLiteral("Apply"));
+        Apply->setGeometry(QRect(114, 630, 121, 41));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -162,6 +166,7 @@ public:
         initOk->setText(QApplication::translate("MainWindow", "OK", 0));
         radioButton->setText(QApplication::translate("MainWindow", "Obstacles", 0));
         label_7->setText(QApplication::translate("MainWindow", "Number obstracles:", 0));
+        Apply->setText(QApplication::translate("MainWindow", "Apply", 0));
     } // retranslateUi
 
 };

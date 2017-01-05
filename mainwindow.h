@@ -10,6 +10,8 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QFrame>
+#include <QGraphicsPolygonItem>
+#include <QPolygonF>
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +45,7 @@ private Q_SLOTS:
     void showInputsForObstacles();
     void initializationFinish();
     void showInputsCoordinate(const QString&);
+    void readEnteredData();
 signals:
     void signalChangedOptions(int orderNumObstacles, int option);
 };
