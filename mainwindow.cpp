@@ -28,9 +28,9 @@ void MainWindow::showInputsForObstacles(){
 void MainWindow::initializationFinish(){
     qDebug()<<"poziva se slot 2";
     scene.clear();
-    scene.addText("Hello, world!");
     UIMW->graphicsView->setScene(&scene);
     UIMW->graphicsView->update();
+    //UIMW->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
 
     numberObstacles = UIMW->lineEdit_5->text().toInt();
     qDebug()<<"numberobstacles";
@@ -174,15 +174,12 @@ void MainWindow::showInputsCoordinate(const QString& text){
     {
         qDebug()<<"opcija2";
 
-        QLabel *lbl1 = new QLabel("F1:");
-        QLabel *lbl2 = new QLabel("F2:");
+        QLabel *lbl1 = new QLabel("C:");
         QLabel *lbl3 = new QLabel("a:");
         QLabel *lbl4 = new QLabel("b:");
 
         QLineEdit *edLine1 = new QLineEdit();
         QLineEdit *edLine2 = new QLineEdit();
-        QLineEdit *edLine3 = new QLineEdit();
-        QLineEdit *edLine4 = new QLineEdit();
         QLineEdit *edLine5 = new QLineEdit();
         QLineEdit *edLine6 = new QLineEdit();
 
@@ -190,10 +187,6 @@ void MainWindow::showInputsCoordinate(const QString& text){
         pointsBoxList.at(index)->addWidget(lbl1,0,0);
         pointsBoxList.at(index)->addWidget(edLine1,0,1);
         pointsBoxList.at(index)->addWidget(edLine2,0,2);
-
-        pointsBoxList.at(index)->addWidget(lbl2,1,0);
-        pointsBoxList.at(index)->addWidget(edLine3,1,1);
-        pointsBoxList.at(index)->addWidget(edLine4,1,2);
 
         pointsBoxList.at(index)->addWidget(lbl3,2,0);
         pointsBoxList.at(index)->addWidget(edLine5,2,1);
@@ -203,8 +196,6 @@ void MainWindow::showInputsCoordinate(const QString& text){
 
         listPoints.at(index)->push_back(edLine1);
         listPoints.at(index)->push_back(edLine2);
-        listPoints.at(index)->push_back(edLine3);
-        listPoints.at(index)->push_back(edLine4);
         listPoints.at(index)->push_back(edLine5);
         listPoints.at(index)->push_back(edLine6);
 
@@ -524,21 +515,463 @@ void MainWindow::readEnteredData(){
 //    QPolygonF *pol = new QPolygon(points);
 //    QGraphicsPolygonItem *polygon = new QGraphicsPolygonItem(
 //                )
-    QPolygonF Triangle;
-    Triangle.append(QPointF(-500.,0));
-    Triangle.append(QPointF(0.,-500));
-    Triangle.append(QPointF(500.,0));
-    Triangle.append(QPointF(-500.,0));
-
     QPen pen;
     QBrush brush;
-    pen.setColor(Qt::yellow);
-    brush.setColor(Qt::black);
+    pen.setColor(Qt::red);
+    pen.setWidth(2);
+    brush.setColor(Qt::green);
     brush.setStyle(Qt::SolidPattern);
 
-    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+    //***************************
+    QList<QComboBox*>::iterator iter = comboBoxList.begin();
+    QList<QList<QLineEdit*>*>::iterator it = listPoints.begin();
+    for(int i = 0; i < numberObstacles; i++){
+        //treba proci kroz sve prepreke, iscitati koja je prepreka u pitanju njen tip i comboBox-a
+        //onda iz liste LineEdit-a iscitati odgovarajuci broj polja(switch po tipu prepreke)
+        //kreirati prepreku i prikazati na sceni
 
-    scene.update();
+        int option = (*iter)->currentIndex();
+        switch(option){
+            case 1: //krug
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x = ed->text().toInt();
+                qDebug()<<"iscitao sam x: ";
+                qDebug()<<x;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y = ed->text().toInt();
+                qDebug()<<"iscitao sam y: ";
+                qDebug()<<y;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int r = ed->text().toInt();
+                qDebug()<<"iscitao sam poluprecnik: ";
+                qDebug()<<r;
+
+                QGraphicsEllipseItem *elipse = scene.addEllipse(x,y,r,r, pen, brush);
+                scene.update();
+                break;
+            }
+            case 2:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x = ed->text().toInt();
+                qDebug()<<"iscitao sam x: ";
+                qDebug()<<x;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y = ed->text().toInt();
+                qDebug()<<"iscitao sam y: ";
+                qDebug()<<y;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int a = ed->text().toInt();
+                qDebug()<<"iscitao sam a: ";
+                qDebug()<<a;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int b = ed->text().toInt();
+                qDebug()<<"iscitao sam a: ";
+                qDebug()<<b;
+
+                QGraphicsEllipseItem *elipse = scene.addEllipse(x,y,a,b, pen, brush);
+                scene.update();
+                break;
+            }
+            case 3:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x1 = ed->text().toInt();
+                qDebug()<<"iscitao sam x1: ";
+                qDebug()<<x1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y1 = ed->text().toInt();
+                qDebug()<<"iscitao sam y1: ";
+                qDebug()<<y1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x2 = ed->text().toInt();
+                qDebug()<<"iscitao sam x2: ";
+                qDebug()<<x2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y2 = ed->text().toInt();
+                qDebug()<<"iscitao sam y2: ";
+                qDebug()<<y2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x3 = ed->text().toInt();
+                qDebug()<<"iscitao sam x3: ";
+                qDebug()<<x3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y3 = ed->text().toInt();
+                qDebug()<<"iscitao sam y3: ";
+                qDebug()<<y3;
+
+                QPolygonF Triangle;
+                Triangle.append(QPointF(x1,y1));
+                Triangle.append(QPointF(x2,y2));
+                Triangle.append(QPointF(x3,y3));
+                Triangle.append(QPointF(x1,y1));
+
+                QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                scene.update();
+                break;
+            }
+            case 4:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x1 = ed->text().toInt();
+                qDebug()<<"iscitao sam x1: ";
+                qDebug()<<x1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y1 = ed->text().toInt();
+                qDebug()<<"iscitao sam y1: ";
+                qDebug()<<y1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x2 = ed->text().toInt();
+                qDebug()<<"iscitao sam x2: ";
+                qDebug()<<x2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y2 = ed->text().toInt();
+                qDebug()<<"iscitao sam y2: ";
+                qDebug()<<y2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x3 = ed->text().toInt();
+                qDebug()<<"iscitao sam x3: ";
+                qDebug()<<x3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y3 = ed->text().toInt();
+                qDebug()<<"iscitao sam y3: ";
+                qDebug()<<y3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x4 = ed->text().toInt();
+                qDebug()<<"iscitao sam x4: ";
+                qDebug()<<x4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y4 = ed->text().toInt();
+                qDebug()<<"iscitao sam y4: ";
+                qDebug()<<y4;
+
+                QPolygonF Pol;
+                Pol.append(QPointF(x1,y1));
+                Pol.append(QPointF(x2,y2));
+                Pol.append(QPointF(x3,y3));
+                Pol.append(QPointF(x4,y4));
+                Pol.append(QPointF(x1,y1));
+
+                QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
+
+                scene.update();
+                break;
+            }
+            case 5:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x1 = ed->text().toInt();
+                qDebug()<<"iscitao sam x1: ";
+                qDebug()<<x1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y1 = ed->text().toInt();
+                qDebug()<<"iscitao sam y1: ";
+                qDebug()<<y1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x2 = ed->text().toInt();
+                qDebug()<<"iscitao sam x2: ";
+                qDebug()<<x2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y2 = ed->text().toInt();
+                qDebug()<<"iscitao sam y2: ";
+                qDebug()<<y2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x3 = ed->text().toInt();
+                qDebug()<<"iscitao sam x3: ";
+                qDebug()<<x3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y3 = ed->text().toInt();
+                qDebug()<<"iscitao sam y3: ";
+                qDebug()<<y3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x4 = ed->text().toInt();
+                qDebug()<<"iscitao sam x4: ";
+                qDebug()<<x4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y4 = ed->text().toInt();
+                qDebug()<<"iscitao sam y4: ";
+                qDebug()<<y4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x5 = ed->text().toInt();
+                qDebug()<<"iscitao sam x5: ";
+                qDebug()<<x5;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y5 = ed->text().toInt();
+                qDebug()<<"iscitao sam y5: ";
+                qDebug()<<y5;
+
+                QPolygonF Pol;
+                Pol.append(QPointF(x1,y1));
+                Pol.append(QPointF(x2,y2));
+                Pol.append(QPointF(x3,y3));
+                Pol.append(QPointF(x4,y4));
+                Pol.append(QPointF(x5,y5));
+                Pol.append(QPointF(x1,y1));
+
+                QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
+
+                scene.update();
+                break;
+            }
+            case 6:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x1 = ed->text().toInt();
+                qDebug()<<"iscitao sam x1: ";
+                qDebug()<<x1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y1 = ed->text().toInt();
+                qDebug()<<"iscitao sam y1: ";
+                qDebug()<<y1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x2 = ed->text().toInt();
+                qDebug()<<"iscitao sam x2: ";
+                qDebug()<<x2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y2 = ed->text().toInt();
+                qDebug()<<"iscitao sam y2: ";
+                qDebug()<<y2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x3 = ed->text().toInt();
+                qDebug()<<"iscitao sam x3: ";
+                qDebug()<<x3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y3 = ed->text().toInt();
+                qDebug()<<"iscitao sam y3: ";
+                qDebug()<<y3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x4 = ed->text().toInt();
+                qDebug()<<"iscitao sam x4: ";
+                qDebug()<<x4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y4 = ed->text().toInt();
+                qDebug()<<"iscitao sam y4: ";
+                qDebug()<<y4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x5 = ed->text().toInt();
+                qDebug()<<"iscitao sam x5: ";
+                qDebug()<<x5;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y5 = ed->text().toInt();
+                qDebug()<<"iscitao sam y5: ";
+                qDebug()<<y5;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x6 = ed->text().toInt();
+                qDebug()<<"iscitao sam x6: ";
+                qDebug()<<x6;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y6 = ed->text().toInt();
+                qDebug()<<"iscitao sam y6: ";
+                qDebug()<<y6;
+
+                QPolygonF Pol;
+                Pol.append(QPointF(x1,y1));
+                Pol.append(QPointF(x2,y2));
+                Pol.append(QPointF(x3,y3));
+                Pol.append(QPointF(x4,y4));
+                Pol.append(QPointF(x5,y5));
+                Pol.append(QPointF(x6,y6));
+                Pol.append(QPointF(x1,y1));
+
+                QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
+
+                scene.update();
+                break;
+            }
+            case 7:
+            {
+                QList<QLineEdit*>::iterator innerIterator = (*(*it)).begin();
+                QLineEdit *ed = (*innerIterator);
+                int x1 = ed->text().toInt();
+                qDebug()<<"iscitao sam x1: ";
+                qDebug()<<x1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y1 = ed->text().toInt();
+                qDebug()<<"iscitao sam y1: ";
+                qDebug()<<y1;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x2 = ed->text().toInt();
+                qDebug()<<"iscitao sam x2: ";
+                qDebug()<<x2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y2 = ed->text().toInt();
+                qDebug()<<"iscitao sam y2: ";
+                qDebug()<<y2;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x3 = ed->text().toInt();
+                qDebug()<<"iscitao sam x3: ";
+                qDebug()<<x3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y3 = ed->text().toInt();
+                qDebug()<<"iscitao sam y3: ";
+                qDebug()<<y3;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x4 = ed->text().toInt();
+                qDebug()<<"iscitao sam x4: ";
+                qDebug()<<x4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y4 = ed->text().toInt();
+                qDebug()<<"iscitao sam y4: ";
+                qDebug()<<y4;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x5 = ed->text().toInt();
+                qDebug()<<"iscitao sam x5: ";
+                qDebug()<<x5;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y5 = ed->text().toInt();
+                qDebug()<<"iscitao sam y5: ";
+                qDebug()<<y5;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x6 = ed->text().toInt();
+                qDebug()<<"iscitao sam x6: ";
+                qDebug()<<x6;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y6 = ed->text().toInt();
+                qDebug()<<"iscitao sam y6: ";
+                qDebug()<<y6;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int x7 = ed->text().toInt();
+                qDebug()<<"iscitao sam x7: ";
+                qDebug()<<x7;
+
+                innerIterator++;
+                ed = (*innerIterator);
+                int y7 = ed->text().toInt();
+                qDebug()<<"iscitao sam y7: ";
+                qDebug()<<y7;
+
+                QPolygonF Pol;
+                Pol.append(QPointF(x1,y1));
+                Pol.append(QPointF(x2,y2));
+                Pol.append(QPointF(x3,y3));
+                Pol.append(QPointF(x4,y4));
+                Pol.append(QPointF(x5,y5));
+                Pol.append(QPointF(x6,y6));
+                Pol.append(QPointF(x7,y7));
+                Pol.append(QPointF(x1,y1));
+
+                QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
+
+                scene.update();
+                break;
+            }
+            default:
+            {
+                qDebug()<<"Error option";
+            }
+        }
+
+
+        ++iter;
+        ++it;
+    }
+    //***************************
 
 
 }
