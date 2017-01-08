@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
     QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
     QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
-
+    m = 1;
+    prevStep = 1;
 }
 
 MainWindow::~MainWindow()
@@ -27,9 +28,32 @@ void MainWindow::showInputsForObstacles(){
 
 void MainWindow::initializationFinish(){
     qDebug()<<"poziva se slot 2";
+
+    //read start point coordiante
+    S_x = UIMW->lineEdit->text().toFloat();
+    S_y = UIMW->lineEdit_2->text().toFloat();
+    //read goal point coordinate
+    G_x = UIMW->lineEdit_3->text().toFloat();
+    G_y = UIMW->lineEdit_4->text().toFloat();
+
+    //izracunavamo jednacinu prave  y = kx+n
+    Pk = (G_y-S_y)/(G_x-S_x);
+    Pn = ((G_y-S_y)/(G_x-S_x))*S_x+S_y;
+    vx = S_x;
+    vy = S_y;
+
+    qDebug()<<"DEBUG"<<Pk;
+    qDebug()<<"DEBUG"<<Pn;
+    qDebug()<<"start point";
+    qDebug()<<S_x<<" "<<S_y;
+    qDebug()<<"goal point";
+    qDebug()<<G_x<<" "<<G_y;
+
     scene.clear();
     UIMW->graphicsView->setScene(&scene);
     UIMW->graphicsView->update();
+
+
     //UIMW->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
 
     numberObstacles = UIMW->lineEdit_5->text().toInt();
@@ -46,6 +70,7 @@ void MainWindow::initializationFinish(){
     itemsList.clear();
     comboBoxList.clear();
     pointsBoxList.clear();
+    listGraphItems.clear();
 
     //sada zasvaku prepreku dodamo podatke u listu kreiramo labele, combobox-eve
     for(int i = 0; i < numberObstacles; i++){
@@ -74,6 +99,10 @@ void MainWindow::initializationFinish(){
         //grid layout zasvaku prepreku u kom ce se pojaviti polja za unos tacaka
         QGridLayout *hb = new QGridLayout();
         pointsBoxList.push_back(hb);
+
+        //graph item zasvaku prepreku
+        //QGraphicsItem *gi = new QGraphicsItem();
+        //listGraphItems.push_back(gi);
 
         //pravimo liste listi za unos podataka
         QList<QLineEdit*> *l = new QList<QLineEdit*>;
@@ -552,8 +581,11 @@ void MainWindow::readEnteredData(){
                 qDebug()<<"iscitao sam poluprecnik: ";
                 qDebug()<<r;
 
-                QGraphicsEllipseItem *elipse = scene.addEllipse(x,y,r,r, pen, brush);
+                QGraphicsEllipseItem *elipse = scene.addEllipse(x-r/2,y-r/2,r,r, pen, brush);
                 scene.update();
+
+                listGraphItems.push_back(elipse);
+
                 break;
             }
             case 2:
@@ -582,8 +614,10 @@ void MainWindow::readEnteredData(){
                 qDebug()<<"iscitao sam a: ";
                 qDebug()<<b;
 
-                QGraphicsEllipseItem *elipse = scene.addEllipse(x,y,a,b, pen, brush);
+                QGraphicsEllipseItem *elipse = scene.addEllipse(x-a/2,y-b/2,a,b, pen, brush);
                 scene.update();
+
+                listGraphItems.push_back(elipse);
                 break;
             }
             case 3:
@@ -633,6 +667,7 @@ void MainWindow::readEnteredData(){
                 QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
 
                 scene.update();
+                listGraphItems.push_back(polygon);
                 break;
             }
             case 4:
@@ -695,6 +730,7 @@ void MainWindow::readEnteredData(){
                 QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
 
                 scene.update();
+                listGraphItems.push_back(polygon);
                 break;
             }
             case 5:
@@ -770,6 +806,7 @@ void MainWindow::readEnteredData(){
                 QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
 
                 scene.update();
+                listGraphItems.push_back(polygon);
                 break;
             }
             case 6:
@@ -858,6 +895,7 @@ void MainWindow::readEnteredData(){
                 QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
 
                 scene.update();
+                listGraphItems.push_back(polygon);
                 break;
             }
             case 7:
@@ -959,6 +997,7 @@ void MainWindow::readEnteredData(){
                 QGraphicsPolygonItem *polygon = scene.addPolygon(Pol,pen, brush);
 
                 scene.update();
+                listGraphItems.push_back(polygon);
                 break;
             }
             default:
@@ -973,5 +1012,209 @@ void MainWindow::readEnteredData(){
     }
     //***************************
 
+    qDebug()<<"broj dodatih item-a u listu: ";
+    qDebug()<<listGraphItems.length();
+
+
+
+//    if(listGraphItems.at(0)->collidesWithItem(listGraphItems.at(1))){
+//        qDebug()<<"Ima kolizije";
+//    } else {
+//        qDebug()<<"Nema kolizije";
+//    }
+
+    deltaX = 5;
+    int pom = ceil((G_x - S_x) / 5);
+    deltaY = (S_y - G_y) / pom;
+
+    timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
+    timer->start(80);
 
 }
+
+//ideja je da se robot krece ka cilju za konstantan korak po X koordinati i po Y kooridinati sve dok ne detektuje prepreku
+//kada detektuje prepreku vrati se za taj korak levo i proba u levo da se pomeri ako nema kolizije pa proba opet napred
+//ako ne moze nazad pa levo ide opet nazad, mora se uvek cuvati fleg koji oznacava prethodni potez napred nazad levo(desno)
+
+void MainWindow::BUG_algorithm(){
+    qDebug()<<"timer ispalio signal";
+    //timer->stop();
+    QPen pen;
+    QBrush brush;
+    pen.setColor(Qt::yellow);
+    pen.setWidth(3);
+    brush.setColor(Qt::blue);
+    brush.setStyle(Qt::SolidPattern);
+
+
+    qDebug()<<"Pocetna tacka";
+    qDebug()<<S_x;
+    qDebug()<<S_y;
+    qDebug()<<"Krajnja tacka";
+    qDebug()<<G_x;
+    qDebug()<<G_y;
+
+
+    qDebug()<<"ovo su delta x i y";
+    qDebug()<<deltaX;
+    qDebug()<<deltaY;
+    vx += deltaX;
+    if(vy < G_y){
+        vy += fabs(deltaY);
+    } else {
+        vy -= fabs(deltaY);
+    }
+    //        qDebug()<<vx;
+    //        qDebug()<<vy;
+
+    robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
+    brush.setColor(Qt::red);
+    goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
+    QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
+
+
+    for(int i = 0; i < listGraphItems.length(); i++){
+        if(robot->collidesWithItem(listGraphItems.at(i))){
+           //naisaoje na neku prepreku treba da se vrati nazad i postavi prevStep
+            prevStep = 2;
+            vx -= deltaX;
+            if(vy < G_y){
+                vy -= fabs(deltaY);
+            } else {
+                vy += fabs(deltaY);
+            }
+        }
+    }
+
+    robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
+    brush.setColor(Qt::red);
+    goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
+    l = scene.addLine(vx,vy,G_x,G_y);
+
+    //ako se vracao u nazad probaj da se pomeris sa tog pravca
+    while(prevStep == 2){
+        if(vy < G_y){
+            vy -= 5;
+        } else {
+            vy -= 5;
+        }
+
+        robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
+        brush.setColor(Qt::red);
+        goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
+        QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
+
+        bool flag = false;
+        for(int i = 0; i < listGraphItems.length(); i++){
+            if(robot->collidesWithItem(listGraphItems.at(i))){
+                flag = true;
+            }
+        }
+
+        if(flag){
+            if(vy < G_y){
+                vy += 5;
+            } else {
+                vy += 5;
+            }
+        } else {
+            break;
+        }
+
+        vx -= deltaX;
+        if(vy < G_y){
+            vy -= fabs(deltaY);
+        } else {
+            vy += fabs(deltaY);
+        }
+
+
+    }
+    if(robot->collidesWithItem(goal)){
+            timer->stop();
+            qDebug()<<"Cilj dostignut";
+    }
+         //azuriraj delta x i y
+    deltaX = 5;
+    int pom = ceil((G_x - vx) / 5);
+    deltaY = (vy - G_y) / pom;
+
+}
+
+
+
+//    if(vx <= G_x){
+
+
+
+//        vy = Pk*vx + Pn;
+
+//        qDebug()<<Pk;
+//        qDebug()<<Pn;
+//        qDebug()<<vx;
+//        qDebug()<<vy;
+
+//        robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
+//        brush.setColor(Qt::red);
+//        goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
+//        QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
+
+        //proveriti da li ima koliziju sa nekom preprekom
+
+        //    if(listGraphItems.at(0)->collidesWithItem(listGraphItems.at(1))){
+        //        qDebug()<<"Ima kolizije";
+        //    } else {
+        //        qDebug()<<"Nema kolizije";
+        //    }
+
+//        for(int i = 0; i < numberObstacles; i++){
+//            if(robot->collidesWithItem(listGraphItems.at(i))){
+//                qDebug()<<"ima koliziju sa preprekom: "<<i;
+//                qDebug()<<qAtan(Pk);
+//                timer->stop();
+//            }
+//        }
+
+
+//        //scene.update();
+//        vx+=5;
+//    }
+//    else
+//    {
+//        timer->stop();
+//    }
+//}
+//        qreal x = (m*G_x + (15-m)*S_x)/15 + 30;
+//        qreal y = (m*G_y + (15-m)*S_y)/15 + 30;
+//        if(x > 200.0){
+//            timer->stop();
+//        }
+//        m++;
+        //n--;
+
+    //    S_x = x;
+    //    S_y = y;
+
+//        qDebug()<<"new points";
+//        qDebug()<<x;
+//        qDebug()<<y;
+
+
+
+//        robot->setX(x);
+//        robot->setY(y);
+//        goal->setX(G_x);
+//        goal->setY(G_y);
+//        scene.update();
+//        qDebug()<<"ispis cilja";
+//        qDebug()<<goal->x();
+//        qDebug()<<goal->y();
+//        qDebug()<<"ispis robota";
+//        qDebug()<<robot->x();
+//        qDebug()<<robot->y();
+//        qDebug()<<"ispis G";
+//        qDebug()<<G_x;
+//        qDebug()<<G_y;
+
+

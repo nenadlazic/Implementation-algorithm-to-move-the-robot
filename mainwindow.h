@@ -12,6 +12,10 @@
 #include <QFrame>
 #include <QGraphicsPolygonItem>
 #include <QPolygonF>
+#include <QTimer>
+#include <QThread>
+#include <QtCore/qmath.h>
+#include <math.h>
 
 namespace Ui {
 class MainWindow;
@@ -40,12 +44,41 @@ private:
     QList<QList<QLineEdit*>*> listPoints;
     QVBoxLayout *vbox;
     int numberObstacles;
+    //lista geometrijskih figura dodatih na scenu
+    QList <QGraphicsItem *> listGraphItems;
+    //start point
+    qreal S_x;
+    qreal S_y;
+    //goal point
+    qreal G_x;
+    qreal G_y;
+    QGraphicsEllipseItem *robot;
+    QGraphicsEllipseItem *goal;
+    QTimer *timer;
+    int m;
+    double Pn;
+    double Pk;
+
+    //trenutne koordinate robota
+    double vx;
+    double vy;
+
+    //korak po X i Y koji se menja
+    double deltaX;
+    double deltaY;
+
+    // 1 ka cilju
+    // 2 nazad
+    // 3 promena pravca
+    int prevStep;
+
     void emitshowInputsCoordinateSignal(int orderNumObstacles, int option);
 private Q_SLOTS:
     void showInputsForObstacles();
     void initializationFinish();
     void showInputsCoordinate(const QString&);
     void readEnteredData();
+    void BUG_algorithm();
 signals:
     void signalChangedOptions(int orderNumObstacles, int option);
 };
