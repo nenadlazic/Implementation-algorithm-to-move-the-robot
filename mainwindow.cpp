@@ -1073,6 +1073,7 @@ void MainWindow::BUG_algorithm(){
     goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
     QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
 
+    prevStep = 1;
 
     for(int i = 0; i < listGraphItems.length(); i++){
         if(robot->collidesWithItem(listGraphItems.at(i))){
@@ -1119,6 +1120,7 @@ void MainWindow::BUG_algorithm(){
                 vy += 5;
             }
         } else {
+            prevStep = 3;
             break;
         }
 
@@ -1131,14 +1133,18 @@ void MainWindow::BUG_algorithm(){
 
 
     }
+
+    if(prevStep == 3){
+        deltaX = 5;
+        int pom = ceil((G_x - vx) / 5);
+        deltaY = (vy - G_y) / pom;
+    }
     if(robot->collidesWithItem(goal)){
             timer->stop();
             qDebug()<<"Cilj dostignut";
     }
          //azuriraj delta x i y
-    deltaX = 5;
-    int pom = ceil((G_x - vx) / 5);
-    deltaY = (vy - G_y) / pom;
+
 
 }
 
