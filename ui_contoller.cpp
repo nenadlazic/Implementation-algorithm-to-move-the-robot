@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "ui_controller.h"
+#include "user_interface.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     prevStep = 1;
     timer = new QTimer();
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
-    QObject::connect(timer, SIGNAL(visualiseSignal()), this, SLOT(visualise()));
 }
 
 MainWindow::~MainWindow()
@@ -977,82 +976,4 @@ void MainWindow::showCurrent(){
     brush.setColor(Qt::red);
     goal = scene.addEllipse(target.first-8,target.second-8,16,16, pen, brush);
 
-}
-
-void MainWindow::BUG_algorithm(){
-
-    qDebug()<<"Pocetna tacka";
-    qDebug()<<"("<<start.first<<","<<start.second<<")";
-    qDebug()<<"Krajnja tacka";
-    qDebug()<<"("<<target.first<<","<<target.second<<")";
-    qDebug()<<"Vektor ";
-    qDebug()<<"("<<unitDirectionVector.first<<","<<unitDirectionVector.second<<")";
-
-    if(prevStep == 1){
-        current = qMakePair(current.first+speed*unitDirectionVector.first, current.second+speed*unitDirectionVector.second);
-
-        showCurrent();
-
-        prevStep = 1;
-
-        for(int i = 0; i < listGraphItems.length(); i++){
-            if(robot->collidesWithItem(listGraphItems.at(i))){
-            //naisao je na neku prepreku treba da se vrati nazad i postavi prevStep
-                prevStep = 2;
-                current = qMakePair(current.first-speed*unitDirectionVector.first, current.second-speed*unitDirectionVector.second);
-                break;
-            }
-        }
-
-        //ovo iscrtavamo vise puta da bi se u radu aplikacije videlo kako algoritam radi odn kako robot razmislja
-
-        showCurrent();
-    }
-
-
-    //ako se u prethodnom koraku vracao nazad, treba izracunati vektor normalan na vektor pravca
-    //i probati levo da li moze
-    if(prevStep == 2){
-
-        current = qMakePair(current.first+speed*normalVector.first, current.second+speed*normalVector.second);
-
-        //ponovo iscrtavamo radi prikaza nacina razmisljanja robota
-        showCurrent();
-
-        prevStep = 3; //ako ne nadje koliziju znaci moze da postavi poziciju levo
-        for(int i = 0; i < listGraphItems.length(); i++){
-            if(robot->collidesWithItem(listGraphItems.at(i))){
-            //naisaoje na neku prepreku treba da se vrati nazad i postavi prevStep
-                prevStep = 2;
-                current = qMakePair(current.first-speed*normalVector.first, current.second-speed*normalVector.second);
-                break;
-            }
-        }
-
-        if(prevStep == 2){
-            current = qMakePair(current.first-speed*unitDirectionVector.first, current.second-speed*unitDirectionVector.second);
-
-            showCurrent();
-        }
-    }
-
-    if(prevStep == 3){
-        qDebug()<<"prevStep = 3";
-
-        //treba ponovo izracunati vektor pravca ka cilju od trenutne pozicije
-
-        directionVector = qMakePair(target.first-current.first, target.second-current.second);
-        qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
-        double tmp = qSqrt(tmp1);
-        //izracunali smo jedinicni vektor pravca
-        unitDirectionVector = qMakePair(directionVector.first/tmp,directionVector.second/tmp);
-
-        prevStep = 1;
-    }
-
-    if(robot->collidesWithItem(goal)){
-        timer->stop();
-        timer->destroyed();
-        qDebug()<<"Cilj dostignut";
-    }
 }

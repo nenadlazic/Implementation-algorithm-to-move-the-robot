@@ -83,12 +83,7 @@ private:
     //robot step size
     int speed = 2;
 
-    bool flagCalculate;
-
     void showCurrent();
-
-public slots:
-    void setValue(int value);
 
 private Q_SLOTS:
     void showInputsForObstacles();
@@ -97,8 +92,6 @@ private Q_SLOTS:
     void readEnteredData();
     void BUG_algorithm();
     void visualise();
-signals:
-    void visualiseSignal();
 };
 
 #endif // MAINWINDOW_H
