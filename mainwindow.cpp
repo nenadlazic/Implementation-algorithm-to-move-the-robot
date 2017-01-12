@@ -12,8 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
     QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
     QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
-    m = 1;
     prevStep = 1;
+    timer = new QTimer();
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
+    QObject::connect(timer, SIGNAL(visualiseSignal()), this, SLOT(visualise()));
 }
 
 MainWindow::~MainWindow()
@@ -22,13 +24,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::showInputsForObstacles(){
-    qDebug()<<"poziva se slot";
     UIMW->lineEdit_5->setReadOnly(false);
 }
 
 void MainWindow::initializationFinish(){
-    qDebug()<<"poziva se slot 2";
-
     //read start point coordiante
     S_x = UIMW->lineEdit->text().toFloat();
     S_y = UIMW->lineEdit_2->text().toFloat();
@@ -36,25 +35,19 @@ void MainWindow::initializationFinish(){
     G_x = UIMW->lineEdit_3->text().toFloat();
     G_y = UIMW->lineEdit_4->text().toFloat();
 
-    //izracunavamo jednacinu prave  y = kx+n
-    Pk = (G_y-S_y)/(G_x-S_x);
-    Pn = ((G_y-S_y)/(G_x-S_x))*S_x+S_y;
-    vx = S_x;
-    vy = S_y;
-
-    qDebug()<<"DEBUG"<<Pk;
-    qDebug()<<"DEBUG"<<Pn;
-    qDebug()<<"start point";
-    qDebug()<<S_x<<" "<<S_y;
-    qDebug()<<"goal point";
-    qDebug()<<G_x<<" "<<G_y;
+    start = qMakePair(S_x,S_y);
+    target = qMakePair(G_x,G_y);
+    current = qMakePair(S_x,S_y);
+    //start->target vector
+    directionVector = qMakePair(target.first-start.first, target.second-start.second);
+    qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
+    double tmp = qSqrt(tmp1);
+    //the unit direction vector
+    unitDirectionVector = qMakePair(directionVector.first/tmp,directionVector.second/tmp);
 
     scene.clear();
     UIMW->graphicsView->setScene(&scene);
     UIMW->graphicsView->update();
-
-
-    //UIMW->graphicsView->setAlignment(Qt::AlignTop|Qt::AlignLeft);
 
     numberObstacles = UIMW->lineEdit_5->text().toInt();
     qDebug()<<"numberobstacles";
@@ -63,18 +56,15 @@ void MainWindow::initializationFinish(){
     QStringList listS=(QStringList()<<"odaberi"<<"krug"<<"elipsa"<<"trougao"<<"cetvorougao"<<"petougao"<<"sestougao"<<"sedmougao");
     UIMW->scrollArea->setWidgetResizable(true);
 
-    //za jednu prepreku cuvacemo podatke u vise lista
-    //jedna sa imenom prepreke
-    //u drugoj opcija
-    //trecoj unos tacaka za listu
+    //data about obstacles
     itemsList.clear();
     comboBoxList.clear();
     pointsBoxList.clear();
     listGraphItems.clear();
 
-    //sada zasvaku prepreku dodamo podatke u listu kreiramo labele, combobox-eve
+    // For every obstacle add data in lists. Create a list of labels, comboboxes
     for(int i = 0; i < numberObstacles; i++){
-        //kreiramo labele zasvaku prpreku i dodajemo u listu
+        //create label for all obstacles and add in list
         QString s = "Obstacles ";
         s.append(QString::number(i+1));
         s.append(":");
@@ -85,24 +75,18 @@ void MainWindow::initializationFinish(){
         itemsList.push_back(lab);
         qDebug()<<lab->text();
 
-        //kreiramo combobox-eve zasvaku prepreku
+        //Create combobox for all obstacles
         QComboBox *cb = new QComboBox();
         cb->setMinimumHeight(27);
         cb->setMaximumWidth(180);
         cb->setFont(f);
-        //cb->setStyleSheet("QComboBox QAbstractItemView::item { min-height: 10px; min-width: 50px; margin: 2px;}QListView::item:selected { color: black; background-color: lightgray}");
         cb->addItems(listS);
-        //QObject::connect(cb, SIGNAL(signalChangedOptions(4,4)), this, SLOT(showInputsCoordinate()));
         QObject::connect(cb,SIGNAL(currentIndexChanged(const QString&)),this,SLOT(showInputsCoordinate(const QString&)));
         comboBoxList.push_back(cb);
 
-        //grid layout zasvaku prepreku u kom ce se pojaviti polja za unos tacaka
+        //grid layout for every obstacle
         QGridLayout *hb = new QGridLayout();
         pointsBoxList.push_back(hb);
-
-        //graph item zasvaku prepreku
-        //QGraphicsItem *gi = new QGraphicsItem();
-        //listGraphItems.push_back(gi);
 
         //pravimo liste listi za unos podataka
         QList<QLineEdit*> *l = new QList<QLineEdit*>;
@@ -120,13 +104,6 @@ void MainWindow::initializationFinish(){
 
     vbox = new QVBoxLayout();
 
-
-//    UIMW->scrollArea->takeWidget();
-//    QWidget *widget = new QWidget();
-//    QSize size = UIMW->scrollArea->size();
-//    widget->setMinimumSize(size.width(),size.height());
-//    widget->setLayout(vbox);
-//    UIMW->scrollArea->setWidget(widget);
     UIMW->scrollArea->setWidgetResizable(true);
 
     QFrame *inner = new QFrame(UIMW->scrollArea);
@@ -134,7 +111,6 @@ void MainWindow::initializationFinish(){
 
     UIMW->scrollArea->setWidget(inner);
     UIMW->scrollArea->show();
-
 
     QList<QComboBox*>::iterator iter = comboBoxList.begin();
     QList<QGridLayout*>::iterator ite = pointsBoxList.begin();
@@ -147,12 +123,10 @@ void MainWindow::initializationFinish(){
 
         ++iter;
         ++ite;
-        // your code here
     }
 }
 
 void MainWindow::showInputsCoordinate(const QString& text){
-    qDebug()<<"slot3 se poziva";
     qDebug()<<text;
     qDebug()<<QObject::sender();
     QList<QComboBox*>::iterator iter = comboBoxList.begin();
@@ -162,9 +136,9 @@ void MainWindow::showInputsCoordinate(const QString& text){
 
     while(iter != comboBoxList.end()){
         if((*iter) == QObject::sender()){
-            qDebug()<<"nasao sam da je u listi pod rednim brojem: ";
+            qDebug()<<"find in list. order number: ";
             qDebug()<<i;
-            qDebug()<<"odabrana opcija je: ";
+            qDebug()<<"selected option is: ";
             qDebug()<<(*iter)->currentIndex();
             opt = (*iter)->currentIndex();
             index = i;
@@ -177,8 +151,6 @@ void MainWindow::showInputsCoordinate(const QString& text){
     switch(opt){
     case 1://krug
     {
-        qDebug()<<"opcija1";
-
         QLabel *lbl1 = new QLabel("C:");
         QLabel *lbl2 = new QLabel("R:");
 
@@ -201,8 +173,6 @@ void MainWindow::showInputsCoordinate(const QString& text){
     }
     case 2://elipsa
     {
-        qDebug()<<"opcija2";
-
         QLabel *lbl1 = new QLabel("C:");
         QLabel *lbl3 = new QLabel("a:");
         QLabel *lbl4 = new QLabel("b:");
@@ -232,8 +202,6 @@ void MainWindow::showInputsCoordinate(const QString& text){
     }
     case 3://poligon
     {
-        qDebug()<<"opcija3";
-
         QLabel *lbl1 = new QLabel("A:");
         QLabel *lbl2 = new QLabel("B:");
         QLabel *lbl3 = new QLabel("C:");
@@ -494,56 +462,13 @@ void MainWindow::showInputsCoordinate(const QString& text){
     }
     default:
     {
-        qDebug()<<"Nekorektan unos tipa prepreke za prepreku";
+        qDebug()<<"Error input";
         qDebug()<<index;
     }
     }
-
-
-
-
-    //pointsBoxList.at(index)->addWidget(edLine4,1,2);
-
-//    pointsBoxList.at(index)->addItem(
-//                );
-
-}
-
-void MainWindow::emitshowInputsCoordinateSignal(int orderNumObstacles, int option)
-{
-    emit signalChangedOptions(orderNumObstacles, option);
 }
 
 void MainWindow::readEnteredData(){
-    qDebug()<<"called readEnteredData";
-//    QVector<QPointF> *points;
-
-//    QPointF p1;
-//    QPointF p2;
-//    QPointF p3;
-//    QPointF p4;
-
-//    p1.setX(3);
-//    p1.setY(15);
-
-//    p2.setX(10);
-//    p2.setY(15);
-
-//    p3.setX(10);
-//    p3.setY(20);
-
-//    p4.setX(3);
-//    p4.setY(20);
-
-//    points->push_back(p1);
-//    points->push_back(p2);
-//    points->push_back(p3);
-//    points->push_back(p4);
-
-
-//    QPolygonF *pol = new QPolygon(points);
-//    QGraphicsPolygonItem *polygon = new QGraphicsPolygonItem(
-//                )
     QPen pen;
     QBrush brush;
     pen.setColor(Qt::red);
@@ -551,14 +476,11 @@ void MainWindow::readEnteredData(){
     brush.setColor(Qt::green);
     brush.setStyle(Qt::SolidPattern);
 
-    //***************************
+    scene.clear();
+
     QList<QComboBox*>::iterator iter = comboBoxList.begin();
     QList<QList<QLineEdit*>*>::iterator it = listPoints.begin();
     for(int i = 0; i < numberObstacles; i++){
-        //treba proci kroz sve prepreke, iscitati koja je prepreka u pitanju njen tip i comboBox-a
-        //onda iz liste LineEdit-a iscitati odgovarajuci broj polja(switch po tipu prepreke)
-        //kreirati prepreku i prikazati na sceni
-
         int option = (*iter)->currentIndex();
         switch(option){
             case 1: //krug
@@ -1010,25 +932,25 @@ void MainWindow::readEnteredData(){
         ++iter;
         ++it;
     }
-    //***************************
 
     qDebug()<<"broj dodatih item-a u listu: ";
     qDebug()<<listGraphItems.length();
 
+    //proveravamo kakave orjentacije je trougao koji grade vektori directionVector i normalVector
+    normalVector = qMakePair(directionVector.second/directionVector.first,-1);
+
+    double check = directionVector.first*normalVector.second-directionVector.second*normalVector.first;
+
+    qreal pomm = qPow(normalVector.first,2) + qPow(normalVector.second,2);
+    double tmp = qSqrt(pomm);
+    //izracunavamo smo jedinicni vektor normale(koji ima smer ,,levo")
+    if(check >= 0){
+        normalVector = qMakePair(-normalVector.first/pomm,-normalVector.second/pomm);
+    } else {
+        normalVector = qMakePair(normalVector.first/pomm,normalVector.second/pomm);
+    }
 
 
-//    if(listGraphItems.at(0)->collidesWithItem(listGraphItems.at(1))){
-//        qDebug()<<"Ima kolizije";
-//    } else {
-//        qDebug()<<"Nema kolizije";
-//    }
-
-    deltaX = 5;
-    int pom = ceil((G_x - S_x) / 5);
-    deltaY = (S_y - G_y) / pom;
-
-    timer = new QTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     timer->start(80);
 
 }
@@ -1037,9 +959,12 @@ void MainWindow::readEnteredData(){
 //kada detektuje prepreku vrati se za taj korak levo i proba u levo da se pomeri ako nema kolizije pa proba opet napred
 //ako ne moze nazad pa levo ide opet nazad, mora se uvek cuvati fleg koji oznacava prethodni potez napred nazad levo(desno)
 
-void MainWindow::BUG_algorithm(){
-    qDebug()<<"timer ispalio signal";
-    //timer->stop();
+
+void MainWindow::visualise(){
+    qDebug()<<"adddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+}
+
+void MainWindow::showCurrent(){
     QPen pen;
     QBrush brush;
     pen.setColor(Qt::yellow);
@@ -1047,180 +972,87 @@ void MainWindow::BUG_algorithm(){
     brush.setColor(Qt::blue);
     brush.setStyle(Qt::SolidPattern);
 
-
-    qDebug()<<"Pocetna tacka";
-    qDebug()<<S_x;
-    qDebug()<<S_y;
-    qDebug()<<"Krajnja tacka";
-    qDebug()<<G_x;
-    qDebug()<<G_y;
-
-
-    qDebug()<<"ovo su delta x i y";
-    qDebug()<<deltaX;
-    qDebug()<<deltaY;
-    vx += deltaX;
-    if(vy < G_y){
-        vy += fabs(deltaY);
-    } else {
-        vy -= fabs(deltaY);
-    }
-    //        qDebug()<<vx;
-    //        qDebug()<<vy;
-
-    robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
+    scene.removeItem(robot);
+    robot = scene.addEllipse(current.first-8,current.second-8,16,16, pen, brush);
     brush.setColor(Qt::red);
-    goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
-    QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
-
-    prevStep = 1;
-
-    for(int i = 0; i < listGraphItems.length(); i++){
-        if(robot->collidesWithItem(listGraphItems.at(i))){
-           //naisaoje na neku prepreku treba da se vrati nazad i postavi prevStep
-            prevStep = 2;
-            vx -= deltaX;
-            if(vy < G_y){
-                vy -= fabs(deltaY);
-            } else {
-                vy += fabs(deltaY);
-            }
-        }
-    }
-
-    robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
-    brush.setColor(Qt::red);
-    goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
-    l = scene.addLine(vx,vy,G_x,G_y);
-
-    //ako se vracao u nazad probaj da se pomeris sa tog pravca
-    while(prevStep == 2){
-        if(vy < G_y){
-            vy -= 5;
-        } else {
-            vy -= 5;
-        }
-
-        robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
-        brush.setColor(Qt::red);
-        goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
-        QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
-
-        bool flag = false;
-        for(int i = 0; i < listGraphItems.length(); i++){
-            if(robot->collidesWithItem(listGraphItems.at(i))){
-                flag = true;
-            }
-        }
-
-        if(flag){
-            if(vy < G_y){
-                vy += 5;
-            } else {
-                vy += 5;
-            }
-        } else {
-            prevStep = 3;
-            break;
-        }
-
-        vx -= deltaX;
-        if(vy < G_y){
-            vy -= fabs(deltaY);
-        } else {
-            vy += fabs(deltaY);
-        }
-
-
-    }
-
-    if(prevStep == 3){
-        deltaX = 5;
-        int pom = ceil((G_x - vx) / 5);
-        deltaY = (vy - G_y) / pom;
-    }
-    if(robot->collidesWithItem(goal)){
-            timer->stop();
-            qDebug()<<"Cilj dostignut";
-    }
-         //azuriraj delta x i y
-
+    goal = scene.addEllipse(target.first-8,target.second-8,16,16, pen, brush);
 
 }
 
+void MainWindow::BUG_algorithm(){
+
+    qDebug()<<"Pocetna tacka";
+    qDebug()<<"("<<start.first<<","<<start.second<<")";
+    qDebug()<<"Krajnja tacka";
+    qDebug()<<"("<<target.first<<","<<target.second<<")";
+    qDebug()<<"Vektor ";
+    qDebug()<<"("<<unitDirectionVector.first<<","<<unitDirectionVector.second<<")";
+
+    if(prevStep == 1){
+        current = qMakePair(current.first+speed*unitDirectionVector.first, current.second+speed*unitDirectionVector.second);
+
+        showCurrent();
+
+        prevStep = 1;
+
+        for(int i = 0; i < listGraphItems.length(); i++){
+            if(robot->collidesWithItem(listGraphItems.at(i))){
+            //naisao je na neku prepreku treba da se vrati nazad i postavi prevStep
+                prevStep = 2;
+                current = qMakePair(current.first-speed*unitDirectionVector.first, current.second-speed*unitDirectionVector.second);
+                break;
+            }
+        }
+
+        //ovo iscrtavamo vise puta da bi se u radu aplikacije videlo kako algoritam radi odn kako robot razmislja
+
+        showCurrent();
+    }
 
 
-//    if(vx <= G_x){
+    //ako se u prethodnom koraku vracao nazad, treba izracunati vektor normalan na vektor pravca
+    //i probati levo da li moze
+    if(prevStep == 2){
 
+        current = qMakePair(current.first+speed*normalVector.first, current.second+speed*normalVector.second);
 
+        //ponovo iscrtavamo radi prikaza nacina razmisljanja robota
+        showCurrent();
 
-//        vy = Pk*vx + Pn;
+        prevStep = 3; //ako ne nadje koliziju znaci moze da postavi poziciju levo
+        for(int i = 0; i < listGraphItems.length(); i++){
+            if(robot->collidesWithItem(listGraphItems.at(i))){
+            //naisaoje na neku prepreku treba da se vrati nazad i postavi prevStep
+                prevStep = 2;
+                current = qMakePair(current.first-speed*normalVector.first, current.second-speed*normalVector.second);
+                break;
+            }
+        }
 
-//        qDebug()<<Pk;
-//        qDebug()<<Pn;
-//        qDebug()<<vx;
-//        qDebug()<<vy;
+        if(prevStep == 2){
+            current = qMakePair(current.first-speed*unitDirectionVector.first, current.second-speed*unitDirectionVector.second);
 
-//        robot = scene.addEllipse(vx-8,vy-8,16,16, pen, brush);
-//        brush.setColor(Qt::red);
-//        goal = scene.addEllipse(G_x-8,G_y-8,16,16, pen, brush);
-//        QGraphicsLineItem *l = scene.addLine(vx,vy,G_x,G_y);
+            showCurrent();
+        }
+    }
 
-        //proveriti da li ima koliziju sa nekom preprekom
+    if(prevStep == 3){
+        qDebug()<<"prevStep = 3";
 
-        //    if(listGraphItems.at(0)->collidesWithItem(listGraphItems.at(1))){
-        //        qDebug()<<"Ima kolizije";
-        //    } else {
-        //        qDebug()<<"Nema kolizije";
-        //    }
+        //treba ponovo izracunati vektor pravca ka cilju od trenutne pozicije
 
-//        for(int i = 0; i < numberObstacles; i++){
-//            if(robot->collidesWithItem(listGraphItems.at(i))){
-//                qDebug()<<"ima koliziju sa preprekom: "<<i;
-//                qDebug()<<qAtan(Pk);
-//                timer->stop();
-//            }
-//        }
+        directionVector = qMakePair(target.first-current.first, target.second-current.second);
+        qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
+        double tmp = qSqrt(tmp1);
+        //izracunali smo jedinicni vektor pravca
+        unitDirectionVector = qMakePair(directionVector.first/tmp,directionVector.second/tmp);
 
+        prevStep = 1;
+    }
 
-//        //scene.update();
-//        vx+=5;
-//    }
-//    else
-//    {
-//        timer->stop();
-//    }
-//}
-//        qreal x = (m*G_x + (15-m)*S_x)/15 + 30;
-//        qreal y = (m*G_y + (15-m)*S_y)/15 + 30;
-//        if(x > 200.0){
-//            timer->stop();
-//        }
-//        m++;
-        //n--;
-
-    //    S_x = x;
-    //    S_y = y;
-
-//        qDebug()<<"new points";
-//        qDebug()<<x;
-//        qDebug()<<y;
-
-
-
-//        robot->setX(x);
-//        robot->setY(y);
-//        goal->setX(G_x);
-//        goal->setY(G_y);
-//        scene.update();
-//        qDebug()<<"ispis cilja";
-//        qDebug()<<goal->x();
-//        qDebug()<<goal->y();
-//        qDebug()<<"ispis robota";
-//        qDebug()<<robot->x();
-//        qDebug()<<robot->y();
-//        qDebug()<<"ispis G";
-//        qDebug()<<G_x;
-//        qDebug()<<G_y;
-
-
+    if(robot->collidesWithItem(goal)){
+        timer->stop();
+        timer->destroyed();
+        qDebug()<<"Cilj dostignut";
+    }
+}

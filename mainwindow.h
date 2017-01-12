@@ -16,6 +16,7 @@
 #include <QThread>
 #include <QtCore/qmath.h>
 #include <math.h>
+#include <QPair>
 
 namespace Ui {
 class MainWindow;
@@ -72,15 +73,32 @@ private:
     // 3 promena pravca
     int prevStep;
 
-    void emitshowInputsCoordinateSignal(int orderNumObstacles, int option);
+    QPair<double, double> start;
+    QPair<double, double> target;
+    QPair<double, double> current;
+    QPair<double, double> directionVector;
+    QPair<double, double> unitDirectionVector;
+    QPair<double, double> normalVector;
+
+    //robot step size
+    int speed = 2;
+
+    bool flagCalculate;
+
+    void showCurrent();
+
+public slots:
+    void setValue(int value);
+
 private Q_SLOTS:
     void showInputsForObstacles();
     void initializationFinish();
     void showInputsCoordinate(const QString&);
     void readEnteredData();
     void BUG_algorithm();
+    void visualise();
 signals:
-    void signalChangedOptions(int orderNumObstacles, int option);
+    void visualiseSignal();
 };
 
 #endif // MAINWINDOW_H
