@@ -6,15 +6,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     UIMW = new Ui_MainWindow();
     UIMW->setupUi(this);
     vbox = NULL;
     QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
     QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
     QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
+    QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
+
     prevStep = 1;
     timer = new QTimer();
-    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
 }
 
 MainWindow::~MainWindow()
@@ -27,12 +30,32 @@ void MainWindow::showInputsForObstacles(){
 }
 
 void MainWindow::initializationFinish(){
+
+    QPainter pn( this );
+
+//    int w_2 = scene.width() / 2;
+//    int h_2 = scene.height() / 2;
+
+//    { // X- and Y-Axis drawing
+//        pn.setPen( Qt::blue );
+//        pn.drawLine( 0, h_2, width(), h_2);     // X-Axis
+//        pn.drawLine( w_2, 0 , w_2, height() );  // Y-Axis
+//    }
+//    QMatrix m;
+//    m.translate( w_2, h_2 );
+//    m.scale( 1, -1 );
+
+//    pn.setMatrix( m );
+//    pn.setPen( Qt::NoPen );
+//    pn.setBrush( QBrush( Qt::blue, Qt::Dense4Pattern ) );
+//    pn.drawRect( -10, -10, 20, 20 );
+    timer->stop();
     //read start point coordiante
     S_x = UIMW->lineEdit->text().toFloat();
-    S_y = UIMW->lineEdit_2->text().toFloat();
+    S_y = -(UIMW->lineEdit_2->text().toFloat());
     //read goal point coordinate
     G_x = UIMW->lineEdit_3->text().toFloat();
-    G_y = UIMW->lineEdit_4->text().toFloat();
+    G_y = -(UIMW->lineEdit_4->text().toFloat());
 
     start = qMakePair(S_x,S_y);
     target = qMakePair(G_x,G_y);
@@ -126,6 +149,7 @@ void MainWindow::initializationFinish(){
 }
 
 void MainWindow::showInputsCoordinate(const QString& text){
+    UIMW->Apply->setEnabled(true);
     qDebug()<<text;
     qDebug()<<QObject::sender();
     QList<QComboBox*>::iterator iter = comboBoxList.begin();
@@ -492,7 +516,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y = ed->text().toInt();
+                int y = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y: ";
                 qDebug()<<y;
 
@@ -519,7 +543,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y = ed->text().toInt();
+                int y = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y: ";
                 qDebug()<<y;
 
@@ -532,7 +556,7 @@ void MainWindow::readEnteredData(){
                 innerIterator++;
                 ed = (*innerIterator);
                 int b = ed->text().toInt();
-                qDebug()<<"iscitao sam a: ";
+                qDebug()<<"iscitao sam b: ";
                 qDebug()<<b;
 
                 QGraphicsEllipseItem *elipse = scene.addEllipse(x-a/2,y-b/2,a,b, pen, brush);
@@ -551,7 +575,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y1 = ed->text().toInt();
+                int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
 
@@ -563,7 +587,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y2 = ed->text().toInt();
+                int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
 
@@ -575,7 +599,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y3 = ed->text().toInt();
+                int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
 
@@ -601,7 +625,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y1 = ed->text().toInt();
+                int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
 
@@ -613,7 +637,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y2 = ed->text().toInt();
+                int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
 
@@ -625,7 +649,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y3 = ed->text().toInt();
+                int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
 
@@ -637,7 +661,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y4 = ed->text().toInt();
+                int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
 
@@ -664,7 +688,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y1 = ed->text().toInt();
+                int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
 
@@ -676,7 +700,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y2 = ed->text().toInt();
+                int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
 
@@ -688,7 +712,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y3 = ed->text().toInt();
+                int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
 
@@ -700,7 +724,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y4 = ed->text().toInt();
+                int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
 
@@ -712,7 +736,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y5 = ed->text().toInt();
+                int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
 
@@ -740,7 +764,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y1 = ed->text().toInt();
+                int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
 
@@ -752,7 +776,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y2 = ed->text().toInt();
+                int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
 
@@ -764,7 +788,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y3 = ed->text().toInt();
+                int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
 
@@ -776,7 +800,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y4 = ed->text().toInt();
+                int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
 
@@ -788,7 +812,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y5 = ed->text().toInt();
+                int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
 
@@ -800,7 +824,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y6 = ed->text().toInt();
+                int y6 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y6: ";
                 qDebug()<<y6;
 
@@ -829,7 +853,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y1 = ed->text().toInt();
+                int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
 
@@ -841,7 +865,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y2 = ed->text().toInt();
+                int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
 
@@ -853,7 +877,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y3 = ed->text().toInt();
+                int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
 
@@ -865,7 +889,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y4 = ed->text().toInt();
+                int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
 
@@ -877,7 +901,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y5 = ed->text().toInt();
+                int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
 
@@ -889,7 +913,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y6 = ed->text().toInt();
+                int y6 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y6: ";
                 qDebug()<<y6;
 
@@ -901,7 +925,7 @@ void MainWindow::readEnteredData(){
 
                 innerIterator++;
                 ed = (*innerIterator);
-                int y7 = ed->text().toInt();
+                int y7 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y7: ";
                 qDebug()<<y7;
 
@@ -949,7 +973,8 @@ void MainWindow::readEnteredData(){
         normalVector = qMakePair(normalVector.first/pomm,normalVector.second/pomm);
     }
 
-
+    timer = new QTimer();
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     timer->start(80);
 
 }
@@ -959,10 +984,6 @@ void MainWindow::readEnteredData(){
 //ako ne moze nazad pa levo ide opet nazad, mora se uvek cuvati fleg koji oznacava prethodni potez napred nazad levo(desno)
 
 
-void MainWindow::visualise(){
-    qDebug()<<"adddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
-}
-
 void MainWindow::showCurrent(){
     QPen pen;
     QBrush brush;
@@ -971,9 +992,46 @@ void MainWindow::showCurrent(){
     brush.setColor(Qt::blue);
     brush.setStyle(Qt::SolidPattern);
 
-    scene.removeItem(robot);
     robot = scene.addEllipse(current.first-8,current.second-8,16,16, pen, brush);
     brush.setColor(Qt::red);
     goal = scene.addEllipse(target.first-8,target.second-8,16,16, pen, brush);
+}
 
+void MainWindow::resetAll(){
+
+    timer->stop();
+
+    //*****************
+
+    scene.clear();
+    //ovde cuvamo labele koje se isisuju iznad unosa podataka zasvaku prepreku
+    itemsList.clear();
+    //cuvamo comboBox-eve za svaku prepreku(odabir tipa prepreke)
+    comboBoxList.clear();
+    //u zavisnosti od odabraneopcije u comboBox-u prikazemo odredjen broj polja za unos
+    pointsBoxList.clear();
+    //sadrzi unete podatke
+    listPoints.clear();
+    vbox = NULL;
+    listGraphItems.clear();
+    robot = NULL;
+    goal = NULL;
+    timer = NULL;
+
+    prevStep = 1;
+    flagDrawLine = true;
+    //*****************
+
+    ui->setupUi(this);
+
+    UIMW = new Ui_MainWindow();
+    UIMW->setupUi(this);
+    vbox = NULL;
+    QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
+    QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
+    QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
+    QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
+    prevStep = 1;
+    timer = new QTimer();
 }

@@ -1,5 +1,6 @@
 #include "ui_controller.h"
 
+#define use_visualisation 1
 /*
  * This function is called repeatedly(multishot timer)
  * and this output QPair current that represents the coordinates
@@ -7,11 +8,14 @@
  *
  * */
 void MainWindow::BUG_algorithm(){
+    qDebug()<<"Entered BUG algorithm";
 
     if(prevStep == 1){
         current = qMakePair(current.first+speed*unitDirectionVector.first, current.second+speed*unitDirectionVector.second);
-
+        flagDrawLine = true;
+        #ifdef use_visualisation
         showCurrent();
+        #endif
 
         prevStep = 1;
 
@@ -27,6 +31,7 @@ void MainWindow::BUG_algorithm(){
     }
 
     if(prevStep == 2){
+        flagDrawLine = false;
 
         current = qMakePair(current.first+speed*normalVector.first, current.second+speed*normalVector.second);
 
@@ -50,6 +55,7 @@ void MainWindow::BUG_algorithm(){
     }
 
     if(prevStep == 3){
+        flagDrawLine = true;
         qDebug()<<"prevStep = 3";
 
         directionVector = qMakePair(target.first-current.first, target.second-current.second);

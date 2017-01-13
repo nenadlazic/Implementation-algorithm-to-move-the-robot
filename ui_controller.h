@@ -17,6 +17,7 @@
 #include <QtCore/qmath.h>
 #include <math.h>
 #include <QPair>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -82,8 +83,9 @@ private:
 
     //robot step size
     int speed = 2;
-
+    QAction* actionReboot;
     void showCurrent();
+    bool flagDrawLine = true;
 
 private Q_SLOTS:
     void showInputsForObstacles();
@@ -91,7 +93,8 @@ private Q_SLOTS:
     void showInputsCoordinate(const QString&);
     void readEnteredData();
     void BUG_algorithm();
-    void visualise();
+    void resetAll();
+    //void loadFromFile();
 };
 
 #endif // MAINWINDOW_H
