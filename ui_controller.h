@@ -94,7 +94,7 @@ private Q_SLOTS:
     void readEnteredData();
     void BUG_algorithm();
     void resetAll();
-    //void loadFromFile();
+    void loadFromFile();
 };
 
 #endif // MAINWINDOW_H

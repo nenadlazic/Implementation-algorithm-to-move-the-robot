@@ -10,14 +10,16 @@ MainWindow::MainWindow(QWidget *parent) :
     UIMW = new Ui_MainWindow();
     UIMW->setupUi(this);
     vbox = NULL;
+    prevStep = 1;
+    timer = new QTimer();
     QObject::connect(UIMW->radioButton, SIGNAL(pressed()), this, SLOT(showInputsForObstacles()));
     QObject::connect(UIMW->initOk, SIGNAL(pressed()), this, SLOT(initializationFinish()));
     QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
+    QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
 
-    prevStep = 1;
-    timer = new QTimer();
+
 }
 
 MainWindow::~MainWindow()
@@ -33,22 +35,6 @@ void MainWindow::initializationFinish(){
 
     QPainter pn( this );
 
-//    int w_2 = scene.width() / 2;
-//    int h_2 = scene.height() / 2;
-
-//    { // X- and Y-Axis drawing
-//        pn.setPen( Qt::blue );
-//        pn.drawLine( 0, h_2, width(), h_2);     // X-Axis
-//        pn.drawLine( w_2, 0 , w_2, height() );  // Y-Axis
-//    }
-//    QMatrix m;
-//    m.translate( w_2, h_2 );
-//    m.scale( 1, -1 );
-
-//    pn.setMatrix( m );
-//    pn.setPen( Qt::NoPen );
-//    pn.setBrush( QBrush( Qt::blue, Qt::Dense4Pattern ) );
-//    pn.drawRect( -10, -10, 20, 20 );
     timer->stop();
     //read start point coordiante
     S_x = UIMW->lineEdit->text().toFloat();
@@ -1032,6 +1018,258 @@ void MainWindow::resetAll(){
     QObject::connect(UIMW->Apply, SIGNAL(pressed()), this, SLOT(readEnteredData()));
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
+    QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
+
     prevStep = 1;
     timer = new QTimer();
+}
+
+
+void MainWindow::loadFromFile(){
+    qDebug()<<"loadFromFile called";
+
+    QPen pen;
+    QBrush brush;
+
+    QString path = QFileDialog::getOpenFileName(this,
+        tr("Open file"), "/home/", tr("Text Files (*.txt)"));
+    qDebug()<<"PATH:"<<path;
+
+    QFile inputFile(path);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+
+        QString line = in.readLine();
+        start = qMakePair(line.split(" ").at(0).toInt(),line.split(" ").at(1).toInt());
+        line = in.readLine();
+        target = qMakePair(line.split(" ").at(0).toInt(),-(line.split(" ").at(1).toInt()));
+        qDebug()<<"start and target point";
+        qDebug()<<start.first<<" "<<start.second<<" "<<target.first<<" "<<target.second;
+
+        pen.setColor(Qt::yellow);
+        pen.setWidth(3);
+        brush.setColor(Qt::blue);
+        brush.setStyle(Qt::SolidPattern);
+
+//        robot = scene.addEllipse(current.first-8,current.second-8,16,16, pen, brush);
+//        brush.setColor(Qt::red);
+//        goal = scene.addEllipse(target.first-8,target.second-8,16,16, pen, brush);
+
+        pen.setColor(Qt::red);
+        pen.setWidth(2);
+        brush.setColor(Qt::green);
+        brush.setStyle(Qt::SolidPattern);
+
+        UIMW->graphicsView->setScene(&scene);
+        UIMW->graphicsView->update();
+
+        while (!in.atEnd())
+        {
+            line = in.readLine();
+            qDebug()<<line;
+
+            //read first word in line krug,elipsa,trougao
+            int typeObstaales = line.split(" ").at(0).toInt();
+
+            switch (typeObstaales) {
+                case 1:
+                {
+                qDebug()<<"kruuuuuuuug";
+                    int x = line.split(" ").at(1).toInt();
+                    int y = -(line.split(" ").at(2).toInt());
+                    int r = line.split(" ").at(3).toInt();
+                    qDebug()<<x<<" "<<y<<" "<<r;
+
+
+                    QGraphicsEllipseItem *elipse = scene.addEllipse(x-r/2,y-r/2,r,r, pen, brush);
+                    scene.update();
+
+                    listGraphItems.push_back(elipse);
+
+                    break;
+                }
+                case 2:
+                {
+                    int x = line.split(" ").at(1).toInt();
+                    int y = -(line.split(" ").at(2).toInt());
+                    int a = line.split(" ").at(3).toInt();
+                    int b = line.split(" ").at(4).toInt();
+
+                    qDebug()<<x<<" "<<y<<" "<<a<<" "<<b;
+
+
+                    QGraphicsEllipseItem *elipse = scene.addEllipse(x-a/2,y-b/2,a,b, pen, brush);
+                    scene.update();
+
+                    listGraphItems.push_back(elipse);
+
+                    break;
+                }
+                case 3:{
+                    int x1 = line.split(" ").at(1).toInt();
+                    int y1 = -(line.split(" ").at(2).toInt());
+                    int x2 = line.split(" ").at(3).toInt();
+                    int y2 = -(line.split(" ").at(4).toInt());
+                    int x3 = line.split(" ").at(5).toInt();
+                    int y3 = -(line.split(" ").at(6).toInt());
+
+                    QPolygonF Triangle;
+                    Triangle.append(QPointF(x1,y1));
+                    Triangle.append(QPointF(x2,y2));
+                    Triangle.append(QPointF(x3,y3));
+                    Triangle.append(QPointF(x1,y1));
+
+                    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                    scene.update();
+                    listGraphItems.push_back(polygon);
+                    break;
+                }
+                case 4:{
+                    int x1 = line.split(" ").at(1).toInt();
+                    int y1 = -(line.split(" ").at(2).toInt());
+                    int x2 = line.split(" ").at(3).toInt();
+                    int y2 = -(line.split(" ").at(4).toInt());
+                    int x3 = line.split(" ").at(5).toInt();
+                    int y3 = -(line.split(" ").at(6).toInt());
+                    int x4 = line.split(" ").at(7).toInt();
+                    int y4 = -(line.split(" ").at(8).toInt());
+
+                    QPolygonF Triangle;
+                    Triangle.append(QPointF(x1,y1));
+                    Triangle.append(QPointF(x2,y2));
+                    Triangle.append(QPointF(x3,y3));
+                    Triangle.append(QPointF(x4,y4));
+                    Triangle.append(QPointF(x1,y1));
+
+                    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                    scene.update();
+                    listGraphItems.push_back(polygon);
+                    break;
+                }
+                case 5:{
+                    int x1 = line.split(" ").at(1).toInt();
+                    int y1 = -(line.split(" ").at(2).toInt());
+                    int x2 = line.split(" ").at(3).toInt();
+                    int y2 = -(line.split(" ").at(4).toInt());
+                    int x3 = line.split(" ").at(5).toInt();
+                    int y3 = -(line.split(" ").at(6).toInt());
+                    int x4 = line.split(" ").at(7).toInt();
+                    int y4 = -(line.split(" ").at(8).toInt());
+                    int x5 = line.split(" ").at(9).toInt();
+                    int y5 = -(line.split(" ").at(10).toInt());
+
+                    QPolygonF Triangle;
+                    Triangle.append(QPointF(x1,y1));
+                    Triangle.append(QPointF(x2,y2));
+                    Triangle.append(QPointF(x3,y3));
+                    Triangle.append(QPointF(x4,y4));
+                    Triangle.append(QPointF(x5,y5));
+                    Triangle.append(QPointF(x1,y1));
+
+                    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                    scene.update();
+                    listGraphItems.push_back(polygon);
+                    break;
+                }
+                case 6:{
+                    int x1 = line.split(" ").at(1).toInt();
+                    int y1 = -(line.split(" ").at(2).toInt());
+                    int x2 = line.split(" ").at(3).toInt();
+                    int y2 = -(line.split(" ").at(4).toInt());
+                    int x3 = line.split(" ").at(5).toInt();
+                    int y3 = -(line.split(" ").at(6).toInt());
+                    int x4 = line.split(" ").at(7).toInt();
+                    int y4 = -(line.split(" ").at(8).toInt());
+                    int x5 = line.split(" ").at(9).toInt();
+                    int y5 = -(line.split(" ").at(10).toInt());
+                    int x6 = line.split(" ").at(11).toInt();
+                    int y6 = -(line.split(" ").at(12).toInt());
+
+                    QPolygonF Triangle;
+                    Triangle.append(QPointF(x1,y1));
+                    Triangle.append(QPointF(x2,y2));
+                    Triangle.append(QPointF(x3,y3));
+                    Triangle.append(QPointF(x4,y4));
+                    Triangle.append(QPointF(x5,y5));
+                    Triangle.append(QPointF(x6,y6));
+                    Triangle.append(QPointF(x1,y1));
+
+                    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                    scene.update();
+                    listGraphItems.push_back(polygon);
+                    break;
+                }
+                case 7:{
+                    int x1 = line.split(" ").at(1).toInt();
+                    int y1 = -(line.split(" ").at(2).toInt());
+                    int x2 = line.split(" ").at(3).toInt();
+                    int y2 = -(line.split(" ").at(4).toInt());
+                    int x3 = line.split(" ").at(5).toInt();
+                    int y3 = -(line.split(" ").at(6).toInt());
+                    int x4 = line.split(" ").at(7).toInt();
+                    int y4 = -(line.split(" ").at(8).toInt());
+                    int x5 = line.split(" ").at(9).toInt();
+                    int y5 = -(line.split(" ").at(10).toInt());
+                    int x6 = line.split(" ").at(11).toInt();
+                    int y6 = -(line.split(" ").at(12).toInt());
+                    int x7 = line.split(" ").at(13).toInt();
+                    int y7 = -(line.split(" ").at(14).toInt());
+
+                    QPolygonF Triangle;
+                    Triangle.append(QPointF(x1,y1));
+                    Triangle.append(QPointF(x2,y2));
+                    Triangle.append(QPointF(x3,y3));
+                    Triangle.append(QPointF(x4,y4));
+                    Triangle.append(QPointF(x5,y5));
+                    Triangle.append(QPointF(x6,y6));
+                    Triangle.append(QPointF(x7,y7));
+                    Triangle.append(QPointF(x1,y1));
+
+                    QGraphicsPolygonItem *polygon = scene.addPolygon(Triangle,pen, brush);
+
+                    scene.update();
+                    listGraphItems.push_back(polygon);
+                    break;
+                }
+                default:
+                {
+                    qDebug()<<"Error";
+                    break;
+                }
+            }
+        }
+        inputFile.close();
+
+        prevStep = 1;
+        current = qMakePair(start.first, start.second);
+        //start->target vector
+        directionVector = qMakePair(target.first-start.first, target.second-start.second);
+        qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
+        double tmp = qSqrt(tmp1);
+        //the unit direction vector
+        unitDirectionVector = qMakePair(directionVector.first/tmp,directionVector.second/tmp);
+
+        normalVector = qMakePair(directionVector.second/directionVector.first,-1);
+
+        double check = directionVector.first*normalVector.second-directionVector.second*normalVector.first;
+
+        qreal pomm = qPow(normalVector.first,2) + qPow(normalVector.second,2);
+        tmp = qSqrt(pomm);
+        //izracunavamo smo jedinicni vektor normale(koji ima smer ,,levo")
+        if(check >= 0){
+            normalVector = qMakePair(-normalVector.first/pomm,-normalVector.second/pomm);
+        } else {
+            normalVector = qMakePair(normalVector.first/pomm,normalVector.second/pomm);
+        }
+
+        timer = new QTimer();
+        QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
+        timer->start(80);
+    }
+
 }

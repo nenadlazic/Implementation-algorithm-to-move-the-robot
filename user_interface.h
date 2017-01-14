@@ -177,7 +177,7 @@ public:
         label_7->setText(QApplication::translate("MainWindow", "Number obstracles:", 0));
         Apply->setText(QApplication::translate("MainWindow", "START", 0));
         resetButton->setText(QApplication::translate("MainWindow", "RESET", 0));
-        loadFileButton->setText(QApplication::translate("MainWindow", "Load from file", 0));
+        loadFileButton->setText(QApplication::translate("MainWindow", "Load from file and start", 0));
     } // retranslateUi
 
 };

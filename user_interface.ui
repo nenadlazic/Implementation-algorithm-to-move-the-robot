@@ -329,7 +329,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Load from file</string>
+     <string>Load from file and start</string>
     </property>
    </widget>
   </widget>

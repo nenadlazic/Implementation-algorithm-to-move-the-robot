@@ -17,6 +17,8 @@ void MainWindow::BUG_algorithm(){
         showCurrent();
         #endif
 
+        qDebug()<<"prevStep = 1";
+
         prevStep = 1;
 
         for(int i = 0; i < listGraphItems.length(); i++){
@@ -32,6 +34,8 @@ void MainWindow::BUG_algorithm(){
 
     if(prevStep == 2){
         flagDrawLine = false;
+
+        qDebug()<<"prevStep = 2";
 
         current = qMakePair(current.first+speed*normalVector.first, current.second+speed*normalVector.second);
 
