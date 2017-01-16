@@ -18,6 +18,7 @@
 #include <math.h>
 #include <QPair>
 #include <QFileDialog>
+#include <QtGlobal>
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +66,11 @@ private:
     double vx;
     double vy;
 
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
+
     //korak po X i Y koji se menja
     double deltaX;
     double deltaY;
@@ -86,6 +92,9 @@ private:
     QAction* actionReboot;
     void showCurrent();
     bool flagDrawLine = true;
+
+    double minimum(double a, double b);
+    double maximum(double a, double b);
 
 private Q_SLOTS:
     void showInputsForObstacles();

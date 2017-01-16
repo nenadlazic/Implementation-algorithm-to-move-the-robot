@@ -18,8 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
     QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
-
-
+    minX = 100000;
+    minY = 100000;
+    maxX = -100000;
+    maxY = -100000;
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +37,7 @@ void MainWindow::initializationFinish(){
 
     QPainter pn( this );
 
+    UIMW->loadFileButton->setEnabled(false);
     timer->stop();
     //read start point coordiante
     S_x = UIMW->lineEdit->text().toFloat();
@@ -46,6 +49,17 @@ void MainWindow::initializationFinish(){
     start = qMakePair(S_x,S_y);
     target = qMakePair(G_x,G_y);
     current = qMakePair(S_x,S_y);
+
+    minX = minimum(start.first, minX);
+    maxX = maximum(start.first,maxX);
+    minX = minimum(target.first, minX);
+    maxX = maximum(target.first,maxX);
+
+    minY = minimum(start.second, minY);
+    maxY = maximum(start.second, maxY);
+    minY = minimum(target.second, minY);
+    maxY = maximum(target.second, maxY);
+
     //start->target vector
     directionVector = qMakePair(target.first-start.first, target.second-start.second);
     qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
@@ -512,6 +526,21 @@ void MainWindow::readEnteredData(){
                 qDebug()<<"iscitao sam poluprecnik: ";
                 qDebug()<<r;
 
+                if((x-r) < minX){
+                    minX = x - r;
+                }
+                if((x+r) > maxX){
+                    maxX = x + r;
+                }
+
+                if((y-r) < minY){
+                    minY = y - r;
+                }
+                if((y+r) > maxY){
+                    maxY = y + r;
+                }
+
+
                 QGraphicsEllipseItem *elipse = scene.addEllipse(x-r/2,y-r/2,r,r, pen, brush);
                 scene.update();
 
@@ -545,6 +574,19 @@ void MainWindow::readEnteredData(){
                 qDebug()<<"iscitao sam b: ";
                 qDebug()<<b;
 
+                if((x-a) < minX){
+                    minX = x - a;
+                }
+                if((x+a) > maxX){
+                    maxX = x + a;
+                }
+                if((y-b) < minY){
+                    minY = y - b;
+                }
+                if((y+b) > maxY){
+                    maxY = y + b;
+                }
+
                 QGraphicsEllipseItem *elipse = scene.addEllipse(x-a/2,y-b/2,a,b, pen, brush);
                 scene.update();
 
@@ -558,36 +600,73 @@ void MainWindow::readEnteredData(){
                 int x1 = ed->text().toInt();
                 qDebug()<<"iscitao sam x1: ";
                 qDebug()<<x1;
+                if(x1 < minX){
+                    minX = x1;
+                }
+                if(x1 > maxX){
+                    maxX = x1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
+                if(y1 < minY){
+                    minY = y1;
+                }
+                if(y1 > maxY){
+                    maxY = y1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x2 = ed->text().toInt();
                 qDebug()<<"iscitao sam x2: ";
                 qDebug()<<x2;
+                if(x2 < minX){
+                    minX = x2;
+                }
+                if(x2 > maxX){
+                    maxX = x2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
+                if(y2 < minY){
+                    minY = y2;
+                }
+                if(y2 > maxY){
+                    maxY = y2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x3 = ed->text().toInt();
                 qDebug()<<"iscitao sam x3: ";
                 qDebug()<<x3;
+                if(x3 < minX){
+                    minX = x3;
+                }
+                if(x3 > maxX){
+                    maxX = x3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
+                if(y3 < minY){
+                    minY = y3;
+                }
+                if(y3 > maxY){
+                    maxY = y3;
+                }
+
 
                 QPolygonF Triangle;
                 Triangle.append(QPointF(x1,y1));
@@ -608,48 +687,98 @@ void MainWindow::readEnteredData(){
                 int x1 = ed->text().toInt();
                 qDebug()<<"iscitao sam x1: ";
                 qDebug()<<x1;
+                if(x1 < minX){
+                    minX = x1;
+                }
+                if(x1 > maxX){
+                    maxX = x1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
+                if(y1 < minY){
+                    minY = y1;
+                }
+                if(y1 > maxY){
+                    maxY = y1;
+                }
+
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x2 = ed->text().toInt();
                 qDebug()<<"iscitao sam x2: ";
                 qDebug()<<x2;
+                if(x2 < minX){
+                    minX = x2;
+                }
+                if(x2 > maxX){
+                    maxX = x2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
+                if(y2 < minY){
+                    minY = y2;
+                }
+                if(y2 > maxY){
+                    maxY = y2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x3 = ed->text().toInt();
                 qDebug()<<"iscitao sam x3: ";
                 qDebug()<<x3;
+                if(x3 < minX){
+                    minX = x3;
+                }
+                if(x3 > maxX){
+                    maxX = x3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
+                if(y3 < minY){
+                    minY = y3;
+                }
+                if(y3 > maxY){
+                    maxY = y3;
+                }
+
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x4 = ed->text().toInt();
                 qDebug()<<"iscitao sam x4: ";
                 qDebug()<<x4;
+                if(x4 < minX){
+                    minX = x4;
+                }
+                if(x4 > maxX){
+                    maxX = x4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
+                if(y4 < minY){
+                    minY = y4;
+                }
+                if(y4 > maxY){
+                    maxY = y4;
+                }
 
                 QPolygonF Pol;
                 Pol.append(QPointF(x1,y1));
@@ -671,60 +800,121 @@ void MainWindow::readEnteredData(){
                 int x1 = ed->text().toInt();
                 qDebug()<<"iscitao sam x1: ";
                 qDebug()<<x1;
+                if(x1 < minX){
+                    minX = x1;
+                }
+                if(x1 > maxX){
+                    maxX = x1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
+                if(y1 < minY){
+                    minY = y1;
+                }
+                if(y1 > maxY){
+                    maxY = y1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x2 = ed->text().toInt();
                 qDebug()<<"iscitao sam x2: ";
                 qDebug()<<x2;
+                if(x2 < minX){
+                    minX = x2;
+                }
+                if(x2 > maxX){
+                    maxX = x2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
+                if(y2 < minY){
+                    minY = y2;
+                }
+                if(y2 > maxY){
+                    maxY = y2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x3 = ed->text().toInt();
                 qDebug()<<"iscitao sam x3: ";
                 qDebug()<<x3;
+                if(x3 < minX){
+                    minX = x3;
+                }
+                if(x3 > maxX){
+                    maxX = x3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
+                if(y3 < minY){
+                    minY = y3;
+                }
+                if(y3 > maxY){
+                    maxY = y3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x4 = ed->text().toInt();
                 qDebug()<<"iscitao sam x4: ";
                 qDebug()<<x4;
+                if(x4 < minX){
+                    minX = x4;
+                }
+                if(x4 > maxX){
+                    maxX = x4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
+                if(y4 < minY){
+                    minY = y4;
+                }
+                if(y4 > maxY){
+                    maxY = y4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x5 = ed->text().toInt();
                 qDebug()<<"iscitao sam x5: ";
                 qDebug()<<x5;
+                if(x5 < minX){
+                    minX = x5;
+                }
+                if(x5 > maxX){
+                    maxX = x5;
+                }
+
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
+                if(y5 < minY){
+                    minY = y5;
+                }
+                if(y5 > maxY){
+                    maxY = y5;
+                }
 
                 QPolygonF Pol;
                 Pol.append(QPointF(x1,y1));
@@ -747,72 +937,141 @@ void MainWindow::readEnteredData(){
                 int x1 = ed->text().toInt();
                 qDebug()<<"iscitao sam x1: ";
                 qDebug()<<x1;
+                if(x1 < minX){
+                    minX = x1;
+                }
+                if(x1 > maxX){
+                    maxX = x1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
+                if(y1 < minY){
+                    minY = y1;
+                }
+                if(y1 > maxY){
+                    maxY = y1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x2 = ed->text().toInt();
                 qDebug()<<"iscitao sam x2: ";
                 qDebug()<<x2;
+                if(x2 < minX){
+                    minX = x2;
+                }
+                if(x2 > maxX){
+                    maxX = x2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
+                if(y2 < minY){
+                    minY = y2;
+                }
+                if(y2 > maxY){
+                    maxY = y2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x3 = ed->text().toInt();
                 qDebug()<<"iscitao sam x3: ";
                 qDebug()<<x3;
-
+                if(x3 < minX){
+                    minX = x3;
+                }
+                if(x3 > maxX){
+                    maxX = x3;
+                }
                 innerIterator++;
                 ed = (*innerIterator);
                 int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
+                if(y3 < minY){
+                    minY = y3;
+                }
+                if(y3 > maxY){
+                    maxY = y3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x4 = ed->text().toInt();
                 qDebug()<<"iscitao sam x4: ";
                 qDebug()<<x4;
-
+                if(x4 < minX){
+                    minX = x4;
+                }
+                if(x4 > maxX){
+                    maxX = x4;
+                }
                 innerIterator++;
                 ed = (*innerIterator);
                 int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
+                if(y4 < minY){
+                    minY = y4;
+                }
+                if(y4 > maxY){
+                    maxY = y4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x5 = ed->text().toInt();
                 qDebug()<<"iscitao sam x5: ";
                 qDebug()<<x5;
+                if(x5 < minX){
+                    minX = x5;
+                }
+                if(x5 > maxX){
+                    maxX = x5;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
+                if(y5 < minY){
+                    minY = y5;
+                }
+                if(y5 > maxY){
+                    maxY = y5;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x6 = ed->text().toInt();
                 qDebug()<<"iscitao sam x6: ";
                 qDebug()<<x6;
-
+                if(x6 < minX){
+                    minX = x6;
+                }
+                if(x6 > maxX){
+                    maxX = x6;
+                }
                 innerIterator++;
                 ed = (*innerIterator);
                 int y6 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y6: ";
                 qDebug()<<y6;
+                if(y6 < minY){
+                    minY = y6;
+                }
+                if(y6 > maxY){
+                    maxY = y6;
+                }
 
                 QPolygonF Pol;
                 Pol.append(QPointF(x1,y1));
@@ -836,84 +1095,168 @@ void MainWindow::readEnteredData(){
                 int x1 = ed->text().toInt();
                 qDebug()<<"iscitao sam x1: ";
                 qDebug()<<x1;
+                if(x1 < minX){
+                    minX = x1;
+                }
+                if(x1 > maxX){
+                    maxX = x1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y1 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y1: ";
                 qDebug()<<y1;
+                if(y1 < minY){
+                    minY = y1;
+                }
+                if(y1 > maxY){
+                    maxY = y1;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x2 = ed->text().toInt();
                 qDebug()<<"iscitao sam x2: ";
                 qDebug()<<x2;
+                if(x2 < minX){
+                    minX = x2;
+                }
+                if(x2 > maxX){
+                    maxX = x2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y2 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y2: ";
                 qDebug()<<y2;
+                if(y2 < minY){
+                    minY = y2;
+                }
+                if(y2 > maxY){
+                    maxY = y2;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x3 = ed->text().toInt();
                 qDebug()<<"iscitao sam x3: ";
                 qDebug()<<x3;
+                if(x3 < minX){
+                    minX = x3;
+                }
+                if(x3 > maxX){
+                    maxX = x3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y3 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y3: ";
                 qDebug()<<y3;
+                if(y3 < minY){
+                    minY = y3;
+                }
+                if(y3 > maxY){
+                    maxY = y3;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x4 = ed->text().toInt();
                 qDebug()<<"iscitao sam x4: ";
                 qDebug()<<x4;
+                if(x4 < minX){
+                    minX = x4;
+                }
+                if(x4 > maxX){
+                    maxX = x4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y4 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y4: ";
                 qDebug()<<y4;
+                if(y4 < minY){
+                    minY = y4;
+                }
+                if(y4 > maxY){
+                    maxY = y4;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x5 = ed->text().toInt();
                 qDebug()<<"iscitao sam x5: ";
                 qDebug()<<x5;
+                if(x5 < minX){
+                    minX = x5;
+                }
+                if(x5 > maxX){
+                    maxX = x5;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y5 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y5: ";
                 qDebug()<<y5;
+                if(y5 < minY){
+                    minY = y5;
+                }
+                if(y5 > maxY){
+                    maxY = y5;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x6 = ed->text().toInt();
                 qDebug()<<"iscitao sam x6: ";
                 qDebug()<<x6;
+                if(x6 < minX){
+                    minX = x6;
+                }
+                if(x6 > maxX){
+                    maxX = x6;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y6 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y6: ";
                 qDebug()<<y6;
+                if(y6 < minY){
+                    minY = y6;
+                }
+                if(y6 > maxY){
+                    maxY = y6;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int x7 = ed->text().toInt();
                 qDebug()<<"iscitao sam x7: ";
                 qDebug()<<x7;
+                if(x7 < minX){
+                    minX = x7;
+                }
+                if(x7 > maxX){
+                    maxX = x7;
+                }
 
                 innerIterator++;
                 ed = (*innerIterator);
                 int y7 = -(ed->text().toInt());
                 qDebug()<<"iscitao sam y7: ";
                 qDebug()<<y7;
+                if(y7 < minY){
+                    minY = y7;
+                }
+                if(y7 > maxY){
+                    maxY = y7;
+                }
 
                 QPolygonF Pol;
                 Pol.append(QPointF(x1,y1));
@@ -958,6 +1301,22 @@ void MainWindow::readEnteredData(){
     } else {
         normalVector = qMakePair(normalVector.first/pomm,normalVector.second/pomm);
     }
+
+    qDebug()<<"minX="<<minX<<" maxX="<<maxX;
+    qDebug()<<"minY="<<minY<<" maxY="<<maxY;
+
+
+    double scaleCoefX = 950.0/(qFabs(minX)+qFabs(maxX));
+    double scaleCoefY = 650.0/(qFabs(minY)+qFabs(maxY));
+    double scaleMin = qMin(scaleCoefX, scaleCoefY);
+    qDebug()<<scaleCoefX;
+    qDebug()<<scaleCoefY;
+
+
+    UIMW->graphicsView->scale(scaleMin,scaleMin);
+
+    UIMW->loadFileButton->setEnabled(false);
+    UIMW->Apply->setEnabled(false);
 
     timer = new QTimer();
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
@@ -1020,6 +1379,13 @@ void MainWindow::resetAll(){
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
     QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
 
+    minX = 100000;
+    minY = 100000;
+    maxX = -100000;
+    maxY = -100000;
+
+    UIMW->loadFileButton->setEnabled(true);
+    UIMW->Apply->setEnabled(true);
     prevStep = 1;
     timer = new QTimer();
 }
@@ -1044,6 +1410,17 @@ void MainWindow::loadFromFile(){
         start = qMakePair(line.split(" ").at(0).toInt(),line.split(" ").at(1).toInt());
         line = in.readLine();
         target = qMakePair(line.split(" ").at(0).toInt(),-(line.split(" ").at(1).toInt()));
+
+        minX = minimum(start.first, minX);
+        maxX = maximum(start.first,maxX);
+        minX = minimum(target.first, minX);
+        maxX = maximum(target.first,maxX);
+
+        minY = minimum(start.second, minY);
+        maxY = maximum(start.second, maxY);
+        minY = minimum(target.second, minY);
+        maxY = maximum(target.second, maxY);
+
         qDebug()<<"start and target point";
         qDebug()<<start.first<<" "<<start.second<<" "<<target.first<<" "<<target.second;
 
@@ -1079,6 +1456,20 @@ void MainWindow::loadFromFile(){
                     int x = line.split(" ").at(1).toInt();
                     int y = -(line.split(" ").at(2).toInt());
                     int r = line.split(" ").at(3).toInt();
+                    if((x-r) < minX){
+                        minX = x - r;
+                    }
+                    if((x+r) > maxX){
+                        maxX = x + r;
+                    }
+                    if((y-r) < minY){
+                        minY = y - r;
+                    }
+                    if((y+r) > maxY){
+                        maxY = y + r;
+                    }
+
+
                     qDebug()<<x<<" "<<y<<" "<<r;
 
 
@@ -1096,6 +1487,18 @@ void MainWindow::loadFromFile(){
                     int a = line.split(" ").at(3).toInt();
                     int b = line.split(" ").at(4).toInt();
 
+                    if((x-a) < minX){
+                        minX = x - a;
+                    }
+                    if((x+a) > maxX){
+                        maxX = x + a;
+                    }
+                    if((y-b) < minY){
+                        minY = y - b;
+                    }
+                    if((y+b) > maxY){
+                        maxY = y + b;
+                    }
                     qDebug()<<x<<" "<<y<<" "<<a<<" "<<b;
 
 
@@ -1108,11 +1511,23 @@ void MainWindow::loadFromFile(){
                 }
                 case 3:{
                     int x1 = line.split(" ").at(1).toInt();
+                    minX = minimum(x1, minX);
+                    maxX = maximum(x1,maxX);
                     int y1 = -(line.split(" ").at(2).toInt());
+                    minY = minimum(y1, minY);
+                    maxY = maximum(y1, maxY);
                     int x2 = line.split(" ").at(3).toInt();
+                    minX = minimum(x2, minX);
+                    maxX = maximum(x2,maxX);
                     int y2 = -(line.split(" ").at(4).toInt());
+                    minY = minimum(y2, minY);
+                    maxY = maximum(y2, maxY);
                     int x3 = line.split(" ").at(5).toInt();
+                    minX = minimum(x3, minX);
+                    maxX = maximum(x3,maxX);
                     int y3 = -(line.split(" ").at(6).toInt());
+                    minY = minimum(y3, minY);
+                    maxY = maximum(y3, maxY);
 
                     QPolygonF Triangle;
                     Triangle.append(QPointF(x1,y1));
@@ -1128,13 +1543,29 @@ void MainWindow::loadFromFile(){
                 }
                 case 4:{
                     int x1 = line.split(" ").at(1).toInt();
+                    minX = minimum(x1, minX);
+                    maxX = maximum(x1,maxX);
                     int y1 = -(line.split(" ").at(2).toInt());
+                    minY = minimum(y1, minY);
+                    maxY = maximum(y1, maxY);
                     int x2 = line.split(" ").at(3).toInt();
+                    minX = minimum(x2, minX);
+                    maxX = maximum(x2,maxX);
                     int y2 = -(line.split(" ").at(4).toInt());
+                    minY = minimum(y2, minY);
+                    maxY = maximum(y2, maxY);
                     int x3 = line.split(" ").at(5).toInt();
+                    minX = minimum(x3, minX);
+                    maxX = maximum(x3,maxX);
                     int y3 = -(line.split(" ").at(6).toInt());
+                    minY = minimum(y3, minY);
+                    maxY = maximum(y3, maxY);
                     int x4 = line.split(" ").at(7).toInt();
+                    minX = minimum(x4, minX);
+                    maxX = maximum(x4,maxX);
                     int y4 = -(line.split(" ").at(8).toInt());
+                    minY = minimum(y4, minY);
+                    maxY = maximum(y4, maxY);
 
                     QPolygonF Triangle;
                     Triangle.append(QPointF(x1,y1));
@@ -1151,15 +1582,35 @@ void MainWindow::loadFromFile(){
                 }
                 case 5:{
                     int x1 = line.split(" ").at(1).toInt();
+                    minX = minimum(x1, minX);
+                    maxX = maximum(x1,maxX);
                     int y1 = -(line.split(" ").at(2).toInt());
+                    minY = minimum(y1, minY);
+                    maxY = maximum(y1, maxY);
                     int x2 = line.split(" ").at(3).toInt();
+                    minX = minimum(x2, minX);
+                    maxX = maximum(x2,maxX);
                     int y2 = -(line.split(" ").at(4).toInt());
+                    minY = minimum(y2, minY);
+                    maxY = maximum(y2, maxY);
                     int x3 = line.split(" ").at(5).toInt();
+                    minX = minimum(x3, minX);
+                    maxX = maximum(x3,maxX);
                     int y3 = -(line.split(" ").at(6).toInt());
+                    minY = minimum(y3, minY);
+                    maxY = maximum(y3, maxY);
                     int x4 = line.split(" ").at(7).toInt();
+                    minX = minimum(x4, minX);
+                    maxX = maximum(x4,maxX);
                     int y4 = -(line.split(" ").at(8).toInt());
+                    minY = minimum(y4, minY);
+                    maxY = maximum(y4, maxY);
                     int x5 = line.split(" ").at(9).toInt();
+                    minX = minimum(x5, minX);
+                    maxX = maximum(x5,maxX);
                     int y5 = -(line.split(" ").at(10).toInt());
+                    minY = minimum(y5, minY);
+                    maxY = maximum(y5, maxY);
 
                     QPolygonF Triangle;
                     Triangle.append(QPointF(x1,y1));
@@ -1177,17 +1628,41 @@ void MainWindow::loadFromFile(){
                 }
                 case 6:{
                     int x1 = line.split(" ").at(1).toInt();
+                    minX = minimum(x1, minX);
+                    maxX = maximum(x1,maxX);
                     int y1 = -(line.split(" ").at(2).toInt());
+                    minY = minimum(y1, minY);
+                    maxY = maximum(y1, maxY);
                     int x2 = line.split(" ").at(3).toInt();
+                    minX = minimum(x2, minX);
+                    maxX = maximum(x2,maxX);
                     int y2 = -(line.split(" ").at(4).toInt());
+                    minY = minimum(y2, minY);
+                    maxY = maximum(y2, maxY);
                     int x3 = line.split(" ").at(5).toInt();
+                    minX = minimum(x3, minX);
+                    maxX = maximum(x3,maxX);
                     int y3 = -(line.split(" ").at(6).toInt());
+                    minY = minimum(y3, minY);
+                    maxY = maximum(y3, maxY);
                     int x4 = line.split(" ").at(7).toInt();
+                    minX = minimum(x4, minX);
+                    maxX = maximum(x4,maxX);
                     int y4 = -(line.split(" ").at(8).toInt());
+                    minY = minimum(y4, minY);
+                    maxY = maximum(y4, maxY);
                     int x5 = line.split(" ").at(9).toInt();
+                    minX = minimum(x5, minX);
+                    maxX = maximum(x5,maxX);
                     int y5 = -(line.split(" ").at(10).toInt());
+                    minY = minimum(y5, minY);
+                    maxY = maximum(y5, maxY);
                     int x6 = line.split(" ").at(11).toInt();
+                    minX = minimum(x6, minX);
+                    maxX = maximum(x6,maxX);
                     int y6 = -(line.split(" ").at(12).toInt());
+                    minY = minimum(y6, minY);
+                    maxY = maximum(y6, maxY);
 
                     QPolygonF Triangle;
                     Triangle.append(QPointF(x1,y1));
@@ -1206,19 +1681,47 @@ void MainWindow::loadFromFile(){
                 }
                 case 7:{
                     int x1 = line.split(" ").at(1).toInt();
+                    minX = minimum(x1, minX);
+                    maxX = maximum(x1,maxX);
                     int y1 = -(line.split(" ").at(2).toInt());
+                    minY = minimum(y1, minY);
+                    maxY = maximum(y1, maxY);
                     int x2 = line.split(" ").at(3).toInt();
+                    minX = minimum(x2, minX);
+                    maxX = maximum(x2,maxX);
                     int y2 = -(line.split(" ").at(4).toInt());
+                    minY = minimum(y2, minY);
+                    maxY = maximum(y2, maxY);
                     int x3 = line.split(" ").at(5).toInt();
+                    minX = minimum(x3, minX);
+                    maxX = maximum(x3,maxX);
                     int y3 = -(line.split(" ").at(6).toInt());
+                    minY = minimum(y3, minY);
+                    maxY = maximum(y3, maxY);
                     int x4 = line.split(" ").at(7).toInt();
+                    minX = minimum(x4, minX);
+                    maxX = maximum(x4,maxX);
                     int y4 = -(line.split(" ").at(8).toInt());
+                    minY = minimum(y4, minY);
+                    maxY = maximum(y4, maxY);
                     int x5 = line.split(" ").at(9).toInt();
+                    minX = minimum(x5, minX);
+                    maxX = maximum(x5,maxX);
                     int y5 = -(line.split(" ").at(10).toInt());
+                    minY = minimum(y5, minY);
+                    maxY = maximum(y5, maxY);
                     int x6 = line.split(" ").at(11).toInt();
+                    minX = minimum(x6, minX);
+                    maxX = maximum(x6,maxX);
                     int y6 = -(line.split(" ").at(12).toInt());
+                    minY = minimum(y6, minY);
+                    maxY = maximum(y6, maxY);
                     int x7 = line.split(" ").at(13).toInt();
+                    minX = minimum(x7, minX);
+                    maxX = maximum(x7,maxX);
                     int y7 = -(line.split(" ").at(14).toInt());
+                    minY = minimum(y7, minY);
+                    maxY = maximum(y7, maxY);
 
                     QPolygonF Triangle;
                     Triangle.append(QPointF(x1,y1));
@@ -1267,9 +1770,41 @@ void MainWindow::loadFromFile(){
             normalVector = qMakePair(normalVector.first/pomm,normalVector.second/pomm);
         }
 
+        UIMW->loadFileButton->setEnabled(false);
+        UIMW->Apply->setEnabled(false);
+
+        qDebug()<<"minX="<<minX<<" maxX="<<maxX;
+        qDebug()<<"minY="<<minY<<" maxY="<<maxY;
+
+
+        double scaleCoefX = 950.0/(qFabs(minX)+qFabs(maxX));
+        double scaleCoefY = 650.0/(qFabs(minY)+qFabs(maxY));
+        double scaleMin = qMin(scaleCoefX, scaleCoefY);
+        qDebug()<<scaleCoefX;
+        qDebug()<<scaleCoefY;
+
+
+        UIMW->graphicsView->scale(scaleMin,scaleMin);
         timer = new QTimer();
         QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
         timer->start(80);
     }
 
+}
+
+double MainWindow::minimum(double a, double b){
+    if(a<b){
+        return a;
+    } else {
+        return b;
+    }
+}
+
+
+double MainWindow::maximum(double a, double b){
+    if(a>b){
+        return a;
+    } else {
+        return b;
+    }
 }
