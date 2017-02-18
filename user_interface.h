@@ -22,6 +22,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
@@ -53,6 +54,9 @@ public:
     QPushButton *Apply;
     QPushButton *resetButton;
     QPushButton *loadFileButton;
+    QPushButton *helpButton;
+    QLabel *label_8;
+    QSpinBox *spinBox;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -68,7 +72,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         welcomeLabel = new QLabel(centralWidget);
         welcomeLabel->setObjectName(QStringLiteral("welcomeLabel"));
-        welcomeLabel->setGeometry(QRect(9, 0, 221, 21));
+        welcomeLabel->setGeometry(QRect(9, 0, 131, 21));
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(10, 57, 101, 20));
@@ -109,7 +113,7 @@ public:
         lineEdit_4->setGeometry(QRect(110, 141, 113, 20));
         initOk = new QPushButton(centralWidget);
         initOk->setObjectName(QStringLiteral("initOk"));
-        initOk->setGeometry(QRect(10, 200, 221, 31));
+        initOk->setGeometry(QRect(10, 210, 221, 31));
         radioButton = new QRadioButton(centralWidget);
         radioButton->setObjectName(QStringLiteral("radioButton"));
         radioButton->setGeometry(QRect(90, 160, 135, 21));
@@ -127,13 +131,15 @@ public:
         graphicsView->setGeometry(QRect(240, 0, 1031, 671));
         graphicsView->setFont(font);
         graphicsView->setAutoFillBackground(false);
+        graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        graphicsView->setResizeAnchor(QGraphicsView::AnchorUnderMouse);
         scrollArea = new QScrollArea(centralWidget);
         scrollArea->setObjectName(QStringLiteral("scrollArea"));
-        scrollArea->setGeometry(QRect(9, 239, 221, 381));
+        scrollArea->setGeometry(QRect(9, 279, 221, 341));
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents_4 = new QWidget();
         scrollAreaWidgetContents_4->setObjectName(QStringLiteral("scrollAreaWidgetContents_4"));
-        scrollAreaWidgetContents_4->setGeometry(QRect(0, 0, 219, 379));
+        scrollAreaWidgetContents_4->setGeometry(QRect(0, 0, 219, 339));
         scrollArea->setWidget(scrollAreaWidgetContents_4);
         Apply = new QPushButton(centralWidget);
         Apply->setObjectName(QStringLiteral("Apply"));
@@ -145,6 +151,22 @@ public:
         loadFileButton = new QPushButton(centralWidget);
         loadFileButton->setObjectName(QStringLiteral("loadFileButton"));
         loadFileButton->setGeometry(QRect(10, 30, 221, 31));
+        helpButton = new QPushButton(centralWidget);
+        helpButton->setObjectName(QStringLiteral("helpButton"));
+        helpButton->setGeometry(QRect(154, 0, 71, 21));
+        label_8 = new QLabel(centralWidget);
+        label_8->setObjectName(QStringLiteral("label_8"));
+        label_8->setGeometry(QRect(10, 245, 131, 21));
+        QFont font1;
+        font1.setPointSize(11);
+        font1.setBold(false);
+        font1.setWeight(50);
+        label_8->setFont(font1);
+        spinBox = new QSpinBox(centralWidget);
+        spinBox->setObjectName(QStringLiteral("spinBox"));
+        spinBox->setGeometry(QRect(150, 240, 81, 31));
+        spinBox->setMinimum(1);
+        spinBox->setMaximum(10);
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -178,6 +200,8 @@ public:
         Apply->setText(QApplication::translate("MainWindow", "START", 0));
         resetButton->setText(QApplication::translate("MainWindow", "RESET", 0));
         loadFileButton->setText(QApplication::translate("MainWindow", "Load from file and start", 0));
+        helpButton->setText(QApplication::translate("MainWindow", "Help", 0));
+        label_8->setText(QApplication::translate("MainWindow", "Speed:", 0));
     } // retranslateUi
 
 };

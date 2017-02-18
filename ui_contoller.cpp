@@ -18,10 +18,24 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
     QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
+    QObject::connect(UIMW->helpButton, SIGNAL(pressed()), this, SLOT(helpDialog()));
+    QObject::connect(UIMW->spinBox, SIGNAL(valueChanged(int)), this, SLOT(changedSpeed(int)));
+
     minX = 100000;
     minY = 100000;
     maxX = -100000;
     maxY = -100000;
+    UIMW->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UIMW->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    h11 = 1.0;
+    h12 = 0;
+    h21 = 1.0;
+    h22 = 0;
+
+    UIMW->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+    UIMW->Apply->setEnabled(false);
+    speed = 2;
+
 }
 
 MainWindow::~MainWindow()
@@ -38,6 +52,8 @@ void MainWindow::initializationFinish(){
     QPainter pn( this );
 
     UIMW->loadFileButton->setEnabled(false);
+    UIMW->Apply->setEnabled(true);
+
     timer->stop();
     //read start point coordiante
     S_x = UIMW->lineEdit->text().toFloat();
@@ -75,7 +91,7 @@ void MainWindow::initializationFinish(){
     qDebug()<<"numberobstacles";
     qDebug()<<numberObstacles;
 
-    QStringList listS=(QStringList()<<"odaberi"<<"krug"<<"elipsa"<<"trougao"<<"cetvorougao"<<"petougao"<<"sestougao"<<"sedmougao");
+    QStringList listS=(QStringList()<<"select"<<"circle"<<"ellipse"<<"triangle"<<"quadrilateral"<<"pentagon"<<"Hexagon"<<"heptagon");
     UIMW->scrollArea->setWidgetResizable(true);
 
     //data about obstacles
@@ -1311,9 +1327,11 @@ void MainWindow::readEnteredData(){
     double scaleMin = qMin(scaleCoefX, scaleCoefY);
     qDebug()<<scaleCoefX;
     qDebug()<<scaleCoefY;
+    maxX = maxX+100;
 
 
     UIMW->graphicsView->scale(scaleMin,scaleMin);
+    UIMW->graphicsView->centerOn((minX+maxX)/2.0, (minY+maxY)/2.0);
 
     UIMW->loadFileButton->setEnabled(false);
     UIMW->Apply->setEnabled(false);
@@ -1378,14 +1396,30 @@ void MainWindow::resetAll(){
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
     QObject::connect(UIMW->resetButton, SIGNAL(pressed()), this, SLOT(resetAll()));
     QObject::connect(UIMW->loadFileButton, SIGNAL(pressed()), this, SLOT(loadFromFile()));
+    QObject::connect(UIMW->helpButton, SIGNAL(pressed()), this, SLOT(helpDialog()));
+    QObject::connect(UIMW->spinBox, SIGNAL(valueChanged(int) ), this, SLOT(changedSpeed(int)));
+
+    UIMW->initOk->setEnabled(true);
+    UIMW->spinBox->setRange(1,10);
+    speed = 2;
 
     minX = 100000;
     minY = 100000;
     maxX = -100000;
     maxY = -100000;
 
+    h11 = 1.0;
+    h12 = 0;
+    h21 = 1.0;
+    h22 = 0;
+
+
+    UIMW->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+
     UIMW->loadFileButton->setEnabled(true);
-    UIMW->Apply->setEnabled(true);
+    UIMW->Apply->setEnabled(false);
+    UIMW->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UIMW->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     prevStep = 1;
     timer = new QTimer();
 }
@@ -1393,6 +1427,7 @@ void MainWindow::resetAll(){
 
 void MainWindow::loadFromFile(){
     qDebug()<<"loadFromFile called";
+    UIMW->initOk->setEnabled(false);
 
     QPen pen;
     QBrush brush;
@@ -1407,7 +1442,7 @@ void MainWindow::loadFromFile(){
         QTextStream in(&inputFile);
 
         QString line = in.readLine();
-        start = qMakePair(line.split(" ").at(0).toInt(),line.split(" ").at(1).toInt());
+        start = qMakePair(line.split(" ").at(0).toInt(),-(line.split(" ").at(1).toInt()));
         line = in.readLine();
         target = qMakePair(line.split(" ").at(0).toInt(),-(line.split(" ").at(1).toInt()));
 
@@ -1750,6 +1785,7 @@ void MainWindow::loadFromFile(){
 
         prevStep = 1;
         current = qMakePair(start.first, start.second);
+        notHaveColision = qMakePair(start.first, start.second);
         //start->target vector
         directionVector = qMakePair(target.first-start.first, target.second-start.second);
         qreal tmp1 = qPow(directionVector.first,2) + qPow(directionVector.second,2);
@@ -1784,6 +1820,31 @@ void MainWindow::loadFromFile(){
         qDebug()<<scaleCoefY;
 
 
+        const QRectF f;
+        //f = NULL;
+        //UIMW->graphicsView->setSceneRect(f);
+
+//        qDebug()<<"Opseg koordinata";
+//        qDebug()<<minX;
+//        qDebug()<<maxX;
+//        qDebug()<<minY;
+//        qDebug()<<maxY;
+//        QPointF center = UIMW->graphicsView->mapToScene(UIMW->graphicsView->rect().center());
+//        qDebug()<<"koordinata scene koja se nalazi u centru view-a";
+//        qDebug()<<center.x();
+//        qDebug()<<center.y();
+//        qreal centerX = (minX + maxX)/2.0;
+//        qreal centerY = (minY +  maxY)/2.0;
+
+//        UIMW->graphicsView->centerOn(centerX, centerY);
+
+
+//        UIMW->graphicsView->setTransform(QGraphicsView::AnchorUnderMouse);
+//        ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+        UIMW->graphicsView->setMouseTracking(true);
+        UIMW->graphicsView->centerOn((minX+maxX)/2.0, (minY+maxY)/2.0);
+
         UIMW->graphicsView->scale(scaleMin,scaleMin);
         timer = new QTimer();
         QObject::connect(timer, SIGNAL(timeout()), this, SLOT(BUG_algorithm()));
@@ -1807,4 +1868,65 @@ double MainWindow::maximum(double a, double b){
     } else {
         return b;
     }
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event){
+    qDebug()<<"ZOOOOOOOOOOOOOOOOOOOM";
+
+    event->accept();
+
+                // zoom
+                const QGraphicsView::ViewportAnchor anchor = QGraphicsView::AnchorUnderMouse;
+                UIMW->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+                int angle = event->angleDelta().y();
+                qreal factor;
+                if (angle > 0) {
+                    factor = 1.1;
+                } else {
+                    factor = 0.9;
+                }
+                UIMW->graphicsView->scale(factor, factor);
+ }
+
+void MainWindow::helpDialog(){
+    qDebug()<<"called help";
+    QDialog *dialog = new QDialog();
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setSizeConstraint(QLayout::SetMinimumSize);
+    dialog->setLayout(layout);
+        QLabel *label = new QLabel;
+        label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+        label->setWordWrap(true);
+        QString str = "In front of you is the implementation bug2 algorithm to move the robot.Bug algorithms assume only local knowledge of the environment and a global goal.";
+        str += "Bug behaviors are simple: \n – 1) Follow a wall (right or left) \n – 2) Move in a straight line toward goal";
+        str += "\n Bug 1 and Bug 2 assume essentially tactile sensing.";
+        str += "\n \n Program using the bug algorithm for the given start and end points determines path from start to end point (using left orientation).";
+        str += "The program accepts as input:\n - coordinates of the start point \n -coordinates of the destination point";
+        str += "-Enter a number of obstacles";
+        str += "\n-Click on button Enter your obstacles";
+        str += "\n -for each obstacle select the type of obstacles from the drop-down menu \n -enter the required data for each obstacle";
+        str += "\n-Click on button START for staring algorithm";
+        str += "Another way by which you can enter data in the program over the file. Format file:\n";
+        str += "\n -information about each obstacle you enter a new line";
+        str += "\n-The first number represents the type of obstacles";
+        str += "\n  1-circle";
+        str += "\n  2-ellipse";
+        str += "\n  3-triangle";
+        str += "\n  4-quadrilateral ";
+        str += "\n  5-pentagon";
+        str += "\n  6-Hexagon";
+        str += "\n  7-heptagon";
+        str += "\n-The continuing row enter coordinates of points required(for circle and ellipse at the end add radius and axis";
+        str += "\n-If you want to cancel the entry and start from the beginning click on Reset button.";
+        label->setText(str);
+    layout->addWidget(label);
+
+
+    dialog->show();
+}
+
+void MainWindow::changedSpeed(int v){
+    qDebug()<<"changedSpeed() called";
+    qDebug()<<"value: "<<v;
+    speed = v;
 }

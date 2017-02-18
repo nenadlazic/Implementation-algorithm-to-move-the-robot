@@ -19,6 +19,12 @@
 #include <QPair>
 #include <QFileDialog>
 #include <QtGlobal>
+#include <QWheelEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QMouseEvent>
+#include <QtGui>
+#include <QSpinBox>
+
 
 namespace Ui {
 class MainWindow;
@@ -31,6 +37,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void wheelEvent(QWheelEvent *event);
+    void mouseMoveEvent( QGraphicsSceneMouseEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -71,6 +79,12 @@ private:
     int minY;
     int maxY;
 
+    qreal h11;
+    qreal h12;
+    qreal h21;
+    qreal h22;
+
+
     //korak po X i Y koji se menja
     double deltaX;
     double deltaY;
@@ -86,6 +100,8 @@ private:
     QPair<double, double> directionVector;
     QPair<double, double> unitDirectionVector;
     QPair<double, double> normalVector;
+    QPair<double, double> notHaveColision;
+    int counter = 0;
 
     //robot step size
     int speed = 2;
@@ -104,6 +120,8 @@ private Q_SLOTS:
     void BUG_algorithm();
     void resetAll();
     void loadFromFile();
+    void helpDialog();
+    void changedSpeed(int v);
 };
 
 #endif // MAINWINDOW_H

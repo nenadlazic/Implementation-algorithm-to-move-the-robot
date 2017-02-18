@@ -31,7 +31,7 @@
      <rect>
       <x>9</x>
       <y>0</y>
-      <width>221</width>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -191,7 +191,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>200</y>
+      <y>210</y>
       <width>221</width>
       <height>31</height>
      </rect>
@@ -266,14 +266,20 @@
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
+    <property name="transformationAnchor">
+     <enum>QGraphicsView::AnchorUnderMouse</enum>
+    </property>
+    <property name="resizeAnchor">
+     <enum>QGraphicsView::AnchorUnderMouse</enum>
+    </property>
    </widget>
    <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
       <x>9</x>
-      <y>239</y>
+      <y>279</y>
       <width>221</width>
-      <height>381</height>
+      <height>341</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -285,7 +291,7 @@
        <x>0</x>
        <y>0</y>
        <width>219</width>
-       <height>379</height>
+       <height>339</height>
       </rect>
      </property>
     </widget>
@@ -330,6 +336,55 @@
     </property>
     <property name="text">
      <string>Load from file and start</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="helpButton">
+    <property name="geometry">
+     <rect>
+      <x>154</x>
+      <y>0</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Help</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>245</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Speed:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>240</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>10</number>
     </property>
    </widget>
   </widget>
